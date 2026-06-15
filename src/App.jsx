@@ -11,7 +11,7 @@ export default function App() {
   const [user, setUser] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
 
-  // 1. Tạo một biến State để ghi nhớ trang trước đó bạn đứng
+  // 1. Tạo một biến State để ghi nhớ trang trước đó
   const [fromPage, setFromPage] = useState("home");
 
   // Màn hình Login
