@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import BranchPopup from "./BranchPopup";
-import logo from "../assets/logoDS.JPG"; // Nhớ giữ nguyên link logo của bạn
+import logo from "../assets/logoDS.JPG";
 
 /* ══════════════════════════════════════════════════════════
    MOCK DATA
