@@ -1,0 +1,36 @@
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap');
+
+:root {
+  font-size: 62.5%;
+  --green-starbucks: #006241;
+  --green-accent:    #00754A;
+  --green-house:     #1E3932;
+  --green-light:     #d4e9e2;
+  --gold:            #cba258;
+  --neutral-warm:    #f2f0eb;
+  --ceramic:         #edebe9;
+  --white:           #ffffff;
+  --text-black:      rgba(0,0,0,0.87);
+  --text-black-soft: rgba(0,0,0,0.58);
+  --text-white:      rgba(255,255,255,1);
+  --text-white-soft: rgba(255,255,255,0.70);
+  --card-shadow:     0px 0px 0.5px 0px rgba(0,0,0,0.14), 0px 1px 1px 0px rgba(0,0,0,0.24);
+  --nav-shadow:      0 1px 3px rgba(0,0,0,0.1), 0 2px 2px rgba(0,0,0,0.06), 0 0 2px rgba(0,0,0,0.07);
+  --btn-radius:      50px;
+  --card-radius:     12px;
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Manrope', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  font-size: 1.6rem;
+  background: var(--neutral-warm);
+  color: var(--text-black);
+  letter-spacing: -0.01em;
+  line-height: 1.5;
+}
+
+button { cursor: pointer; border: none; background: none; font-family: inherit; letter-spacing: -0.01em; }
+input, textarea { font-family: inherit; letter-spacing: -0.01em; }
+a { text-decoration: none; color: inherit; }
