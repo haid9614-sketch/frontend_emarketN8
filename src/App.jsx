@@ -10,9 +10,14 @@ export default function App() {
   const [page, setPage] = useState("home");
   const [user, setUser] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
-
-  // 1. Tạo một biến State để ghi nhớ trang trước đó
   const [fromPage, setFromPage] = useState("home");
+
+  const [homeScroll, setHomeScroll] = useState(0);
+
+  const navigateFromHome = (targetPage) => {
+    setHomeScroll(window.scrollY); // Lưu lại vị trí đang đứng
+    setPage(targetPage); // Chuyển trang
+  };
 
   // Màn hình Login
   if (page === "login") {
@@ -71,15 +76,16 @@ export default function App() {
   return (
     <Home
       user={user}
-      onLoginClick={() => setPage("login")}
+      savedScroll={homeScroll}
+      onLoginClick={() => navigateFromHome("login")}
       onLogout={() => setUser(null)}
-      onCartClick={() => setPage("cart")}
+      onCartClick={() => navigateFromHome("cart")}
       onProductClick={(product) => {
         setSelectedProduct(product);
         setFromPage("home");
-        setPage("detail");
+        navigateFromHome("detail"); // Chuyển trang kèm ghi nhớ tọa độ
       }}
-      onVoucherClick={() => setPage("voucher")}
+      onVoucherClick={() => navigateFromHome("voucher")}
     />
   );
 }

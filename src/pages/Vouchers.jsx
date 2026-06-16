@@ -1,8 +1,8 @@
-import { useState } from "react";
-import bigBran from "../assets/voucher/giftTest.jpg"; // Link ảnh banner to
+import { useState, useEffect } from "react";
+import bigBran from "../assets/voucher/banDvaC.png"; // Link ảnh banner to
 import cardBg1 from "../assets/voucher/card1test.png"; // Ảnh nền local 1
 import cardBg2 from "../assets/voucher/card2test.png"; // Ảnh nền local 2
-
+import cardBg3 from "../assets/voucher/card3test.jpg";
 /* ─── ICONS ────────────────────────────────────────────── */
 function IconArrowLeft() {
   return (
@@ -31,10 +31,15 @@ const MOCK_VOUCHERS = [
 ];
 
 // Mảng tự động bốc ảnh cục bộ lặp lại làm nền
-const BG_IMAGES = [cardBg1, cardBg2];
+const BG_IMAGES = [cardBg1, cardBg2, cardBg3];
 
 /* ─── COMPONENT ────────────────────────────────────────── */
 export default function Vouchers({ onBack }) {
+  // Luôn cuộn lên trên cùng khi mở 
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+
   return (
     <div
       style={{
@@ -122,7 +127,7 @@ export default function Vouchers({ onBack }) {
       <div
         style={{
           width: "100%",
-          height: "400px",
+          height: "480px",
           position: "relative",
           boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
           marginBottom: "4rem",

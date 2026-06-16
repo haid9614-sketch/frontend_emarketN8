@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /* ══════════════════════════════════════════════════════════
    ICONS
@@ -94,6 +94,11 @@ export default function ProductDetail({ product, onBack, onAddToCart }) {
       onBack();
     }, 900);
   };
+
+  // Luôn cuộn lên trên cùng khi mở
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   return (
     <div
@@ -556,13 +561,13 @@ export default function ProductDetail({ product, onBack, onAddToCart }) {
           bottom: 0,
           left: 0,
           right: 0,
-          zIndex: 90, 
+          zIndex: 90,
           height: "5.6rem",
           background: "var(--green-house)",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 -2px 10px rgba(0,0,0,0.15)", 
+          boxShadow: "0 -2px 10px rgba(0,0,0,0.15)",
         }}
       >
         <p

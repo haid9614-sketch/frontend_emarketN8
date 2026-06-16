@@ -271,6 +271,7 @@ function IconPin({ color = "currentColor" }) {
 ══════════════════════════════════════════════════════════ */
 export default function Home({
   user,
+  savedScroll,
   onLoginClick,
   onLogout,
   onProductClick,
@@ -287,6 +288,14 @@ export default function Home({
   const [appliedQuery, setAppliedQuery] = useState("");
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef({});
+
+  
+  // Tự động cuộn đến vị trí đã lưu khi quay lại Home
+  useEffect(() => {
+    setTimeout(() => {
+      window.scrollTo(0, savedScroll || 0);
+    }, 0);
+  }, [savedScroll]);
 
   useLayoutEffect(() => {
     const el = tabRefs.current[activeTab];

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 /* ─── ICONS ───────────────────────────────── */
 function IconTrash() {
@@ -59,11 +59,16 @@ const INITIAL_CART = {
 /* ─── COMPONENT ────────────────────────────────────────── */
 // Nhận thêm onProductClick để mở trang chi tiết
 export default function Cart({ onBack, onCheckout, onProductClick }) {
-  // Tự động tính tổng tiền ban đầu (CHỈ CỘNG SẢN PHẨM CÒN HÀNG)
+  // Tự động tính tổng tiền ban đầu
   const initialTotal = INITIAL_CART.items.reduce(
     (sum, item) => sum + (item.isAvailable ? item.subTotal : 0),
     0,
   );
+
+  // Luôn cuộn lên trên cùng khi mở
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const [cart, setCart] = useState({
     ...INITIAL_CART,
