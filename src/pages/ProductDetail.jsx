@@ -263,7 +263,7 @@ export default function ProductDetail({ product, onBack, onAddToCart }) {
             </div>
           </div>
 
-          {/* Text + feature pills (Đã xóa tag Category Nổi Bật) */}
+          {/* Text + feature pills  */}
           <div
             style={{
               flex: 1,

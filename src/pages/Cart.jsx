@@ -19,7 +19,7 @@ function IconTrash() {
   );
 }
 
-/* ─── MOCK DATA KHỚP DTO BACKEND ──────────────── */
+/* MOCK */
 const INITIAL_CART = {
   idCarts: 1,
   items: [
@@ -56,8 +56,7 @@ const INITIAL_CART = {
   ],
 };
 
-/* ─── COMPONENT ────────────────────────────────────────── */
-// Nhận thêm onProductClick để mở trang chi tiết
+/* COMPONENT */
 export default function Cart({ onBack, onCheckout, onProductClick }) {
   // Tự động tính tổng tiền ban đầu
   const initialTotal = INITIAL_CART.items.reduce(
@@ -199,7 +198,7 @@ export default function Cart({ onBack, onCheckout, onProductClick }) {
                   position: "relative",
                 }}
               >
-                {/* ẢNH SẢN PHẨM: Đã thêm sự kiện Click và Hover phóng to */}
+                {/* ẢNH SẢN PHẨM, sự kiện Click*/}
                 <div
                   onClick={() => onProductClick && onProductClick(item)}
                   title="Nhấn để xem chi tiết"
@@ -215,7 +214,7 @@ export default function Cart({ onBack, onCheckout, onProductClick }) {
                     flexShrink: 0,
                     cursor: "pointer",
                     transition: "transform 0.2s",
-                    pointerEvents: "auto", // Đảm bảo luôn bấm được ảnh dù hết hàng
+                    pointerEvents: "auto",
                   }}
                   onMouseEnter={(e) =>
                     (e.currentTarget.style.transform = "scale(1.05)")
@@ -309,7 +308,7 @@ export default function Cart({ onBack, onCheckout, onProductClick }) {
                         padding: "0.4rem 1.2rem",
                         gap: "1.2rem",
                         background: "#fff",
-                        pointerEvents: "auto", // Cho phép bấm nút xoá dù hết hàng
+                        pointerEvents: "auto", 
                       }}
                     >
                       <button

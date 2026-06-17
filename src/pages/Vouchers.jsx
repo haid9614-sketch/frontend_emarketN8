@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import bigBran from "../assets/voucher/banDvaC.png"; // Link ảnh banner to
+import bigBran from "../assets/voucher/banVoucher.png"; // Link ảnh banner to
 import cardBg1 from "../assets/voucher/card1test.png"; // Ảnh nền local 1
 import cardBg2 from "../assets/voucher/card2test.png"; // Ảnh nền local 2
 import cardBg3 from "../assets/voucher/card3test.jpg";

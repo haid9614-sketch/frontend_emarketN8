@@ -4,6 +4,7 @@ import Login from "./pages/Login";
 import Cart from "./pages/Cart";
 import ProductDetail from "./pages/ProductDetail";
 import Vouchers from "./pages/Vouchers";
+import Addresses from "./pages/Addresses";
 import "./index.css";
 
 export default function App() {
@@ -71,6 +72,10 @@ export default function App() {
       />
     );
   }
+  // Màn hình Địa chỉ
+  if (page === "address") {
+    return <Addresses onBack={() => setPage("home")} />;
+  }
 
   // Màn hình Home (Mặc định)
   return (
@@ -83,9 +88,10 @@ export default function App() {
       onProductClick={(product) => {
         setSelectedProduct(product);
         setFromPage("home");
-        navigateFromHome("detail"); // Chuyển trang kèm ghi nhớ tọa độ
+        navigateFromHome("detail");
       }}
       onVoucherClick={() => navigateFromHome("voucher")}
+      onAddressClick={() => navigateFromHome("address")}
     />
   );
 }

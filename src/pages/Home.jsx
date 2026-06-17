@@ -277,6 +277,7 @@ export default function Home({
   onProductClick,
   onCartClick,
   onVoucherClick,
+  onAddressClick,
 }) {
   const [activeTab, setActiveTab] = useState("home");
   const [selectedCat, setSelectedCat] = useState("all");
@@ -289,7 +290,6 @@ export default function Home({
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef({});
 
-  
   // Tự động cuộn đến vị trí đã lưu khi quay lại Home
   useEffect(() => {
     setTimeout(() => {
@@ -367,7 +367,9 @@ export default function Home({
                 ref={(el) => (tabRefs.current[tab.id] = el)}
                 onClick={() => {
                   if (tab.id === "voucher") {
-                    onVoucherClick(); // Chuyển sang trang Voucher độc lập
+                    onVoucherClick(); // Chuyển sang trang Voucher
+                  } else if (tab.id === "address") {
+                    onAddressClick();
                   } else {
                     setActiveTab(tab.id); // Đổi tab bình thường
                   }
@@ -808,21 +810,7 @@ export default function Home({
         </div>
       )}
 
-      {activeTab === "address" && (
-        <div
-          style={{
-            maxWidth: "1440px",
-            margin: "8rem auto",
-            textAlign: "center",
-            fontSize: "2rem",
-            fontWeight: 600,
-            color: "var(--text-black-soft)",
-          }}
-        >
-          Tính năng Quản lý địa chỉ giao hàng đang được phát triển...
-        </div>
-      )}
-
+      
       {/* ── STICKY BOTTOM CART BAR ── */}
       <div
         style={{
