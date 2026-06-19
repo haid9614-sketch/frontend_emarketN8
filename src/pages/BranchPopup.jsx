@@ -1,63 +1,27 @@
 import { useState } from "react";
 
-/* ─── Mock data ──────────────────────────────────────────── */
+/* ─── Mock data ─── */
 const BRANCHES = [
   {
     id: 1,
     name: "Bà Triệu",
     address: "314 Bà Triệu, Quận Hai Bà Trưng, Hà Nội",
-    distance: "0.4",
-    isOpen: true,
   },
-  {
-    id: 2,
-    name: "6A Quang Trung",
-    address: "6A Quang Trung, Hà Nội",
-    distance: "1.1",
-    isOpen: true,
-  },
-  {
-    id: 3,
-    name: "Bưu điện Hà Nội",
-    address: "Số 6 Đinh Lê, Hà Nội",
-    distance: "1.2",
-    isOpen: false,
-  },
+  { id: 2, name: "6A Quang Trung", address: "6A Quang Trung, Hà Nội" },
+  { id: 3, name: "Bưu điện Hà Nội", address: "Số 6 Đinh Lê, Hà Nội" },
   {
     id: 4,
     name: "Pacific Place HN",
     address: "R105, 83B Lý Thường Kiệt, Hoàn Kiếm, Hà Nội",
-    distance: "1.3",
-    isOpen: false,
   },
   {
     id: 5,
     name: "Vinmec Times City",
     address: "Bệnh viện Vinmec, Times City, Hà Nội",
-    distance: "1.3",
-    isOpen: true,
   },
-  {
-    id: 6,
-    name: "Giải Phóng",
-    address: "56 Giải Phóng, Đống Đa, Hà Nội",
-    distance: "1.5",
-    isOpen: true,
-  },
-  {
-    id: 7,
-    name: "Royal City",
-    address: "72A Nguyễn Trãi, Thanh Xuân, Hà Nội",
-    distance: "2.1",
-    isOpen: true,
-  },
-  {
-    id: 8,
-    name: "Mipec Tower",
-    address: "229 Tây Sơn, Đống Đa, Hà Nội",
-    distance: "2.3",
-    isOpen: true,
-  },
+  { id: 6, name: "Giải Phóng", address: "56 Giải Phóng, Đống Đa, Hà Nội" },
+  { id: 7, name: "Royal City", address: "72A Nguyễn Trãi, Thanh Xuân, Hà Nội" },
+  { id: 8, name: "Mipec Tower", address: "229 Tây Sơn, Đống Đa, Hà Nội" },
 ];
 
 /* ─── Component ─────────────────────────────────────────── */
@@ -145,6 +109,7 @@ export default function BranchPopup({
             {BRANCHES.map((branch) => {
               const isSel = localSel?.id === branch.id;
               const isHovered = hovered === branch.id;
+
               return (
                 <div
                   key={branch.id}
@@ -172,6 +137,7 @@ export default function BranchPopup({
                       gap: "1rem",
                     }}
                   >
+                    {/* Thông tin Chi nhánh */}
                     <div style={{ flex: 1 }}>
                       <p
                         style={{
@@ -192,29 +158,6 @@ export default function BranchPopup({
                       >
                         {branch.address}
                       </p>
-                      <p
-                        style={{
-                          fontSize: "1.25rem",
-                          color: "var(--text-black-soft)",
-                        }}
-                      >
-                        Cách đó {branch.distance} dặm
-                      </p>
-                      {!branch.isOpen && (
-                        <span
-                          style={{
-                            display: "inline-flex",
-                            alignItems: "center",
-                            gap: "0.3rem",
-                            marginTop: "0.5rem",
-                            fontSize: "1.2rem",
-                            color: "#d9840a",
-                            fontWeight: 600,
-                          }}
-                        >
-                          ⚠ Đóng cửa
-                        </span>
-                      )}
                     </div>
 
                     {/* Heart + Info icons */}
@@ -236,6 +179,9 @@ export default function BranchPopup({
                             : "rgba(0,0,0,0.35)",
                           fontSize: "1.55rem",
                           transition: "color 0.2s",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
                         }}
                       >
                         {favorites.includes(branch.id) ? "♥" : "♡"}
@@ -247,6 +193,9 @@ export default function BranchPopup({
                           borderRadius: "50%",
                           color: "rgba(0,0,0,0.35)",
                           fontSize: "1.4rem",
+                          background: "none",
+                          border: "none",
+                          cursor: "pointer",
                         }}
                       >
                         ⓘ
@@ -320,6 +269,8 @@ export default function BranchPopup({
               alignItems: "center",
               justifyContent: "center",
               lineHeight: 1,
+              border: "none",
+              cursor: "pointer",
             }}
           >
             ×

@@ -5,6 +5,7 @@ import Cart from "./pages/Cart";
 import ProductDetail from "./pages/ProductDetail";
 import Vouchers from "./pages/Vouchers";
 import Addresses from "./pages/Addresses";
+import Checkout from "./pages/Checkout";
 import "./index.css";
 
 export default function App() {
@@ -55,7 +56,7 @@ export default function App() {
       <Cart
         onBack={() => setPage("home")}
         onCheckout={(cartData) => {
-          alert("Bắt đầu gọi API thanh toán!");
+          setPage("checkout");
         }}
         onProductClick={(product) => {
           const formattedProduct = {
@@ -72,9 +73,40 @@ export default function App() {
       />
     );
   }
+
   // Màn hình Địa chỉ
   if (page === "address") {
     return <Addresses onBack={() => setPage("home")} />;
+  }
+
+  // Màn hình Thanh toán (Checkout)
+  if (page === "checkout") {
+    // cart data giả lập
+    const checkoutCart = {
+      totalPrice: 351000,
+      items: [
+        {
+          idProduct: 99,
+          productName: "Nước hoa nữ Blooming",
+          imageUrl: "🌸",
+          price: 351000,
+          quantity: 1,
+          subTotal: 351000,
+          isAvailable: true,
+        },
+      ],
+    };
+
+    return (
+      <Checkout
+        cartData={checkoutCart}
+        onBack={() => setPage("cart")}
+        onOrderSuccess={(payload) => {
+          alert("Đặt hàng thành công! Kiểm tra Console F12 để xem DTO");
+          setPage("home");
+        }}
+      />
+    );
   }
 
   // Màn hình Home (Mặc định)

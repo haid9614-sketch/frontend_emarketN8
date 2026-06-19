@@ -137,24 +137,24 @@ export default function Cart({ onBack, onCheckout, onProductClick }) {
             fontWeight: 800,
             borderRadius: "var(--btn-radius)",
             padding: "0.6rem 2.4rem",
-            fontSize: "2rem",
+            fontSize: "1.5rem",
             cursor: "pointer",
             transition: "transform 0.15s",
           }}
           onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
           onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
         >
-          ← Mua thêm
+           Mua thêm
         </button>
         <h1
           style={{
-            fontSize: "2.4rem",
+            fontSize: "1.5rem",
             fontWeight: 800,
             color: "var(--text-black)",
             letterSpacing: "-0.02em",
           }}
         >
-          Giỏ hàng của bạn
+          Emarket/ Giỏ hàng của bạn
         </h1>
       </header>
 
