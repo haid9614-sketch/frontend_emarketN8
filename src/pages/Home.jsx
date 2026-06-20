@@ -278,6 +278,7 @@ export default function Home({
   onCartClick,
   onVoucherClick,
   onAddressClick,
+  onOrderHistoryClick,
 }) {
   const [activeTab, setActiveTab] = useState("home");
   const [selectedCat, setSelectedCat] = useState("all");
@@ -810,7 +811,6 @@ export default function Home({
         </div>
       )}
 
-      
       {/* ── STICKY BOTTOM CART BAR ── */}
       <div
         style={{
@@ -836,7 +836,7 @@ export default function Home({
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: "1.6rem" }}>
           <button
-            onClick={() => console.log("Sau này sẽ mở trang Quản lý đơn hàng")}
+            onClick={onOrderHistoryClick}
             style={{
               display: "flex",
               alignItems: "center",

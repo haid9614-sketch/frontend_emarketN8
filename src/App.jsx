@@ -6,6 +6,7 @@ import ProductDetail from "./pages/ProductDetail";
 import Vouchers from "./pages/Vouchers";
 import Addresses from "./pages/Addresses";
 import Checkout from "./pages/Checkout";
+import OrderHistory from "./pages/OrderHistory";
 import "./index.css";
 
 export default function App() {
@@ -97,6 +98,11 @@ export default function App() {
       ],
     };
 
+    // Màn hình Lịch sử Đơn hàng
+    if (page === "order_history") {
+      return <OrderHistory onBack={() => setPage("home")} />;
+    }
+
     return (
       <Checkout
         cartData={checkoutCart}
@@ -124,6 +130,7 @@ export default function App() {
       }}
       onVoucherClick={() => navigateFromHome("voucher")}
       onAddressClick={() => navigateFromHome("address")}
+      onOrderHistoryClick={() => navigateFromHome("order_history")}
     />
   );
 }

@@ -1,8 +1,11 @@
 import { useState, useEffect } from "react";
 import bigBran from "../assets/voucher/banVoucher.png"; // Link ảnh banner to
-import cardBg1 from "../assets/voucher/card1test.png"; // Ảnh nền local 1
-import cardBg2 from "../assets/voucher/card2test.png"; // Ảnh nền local 2
-import cardBg3 from "../assets/voucher/card3test.jpg";
+import cardBg1 from "../assets/voucher/card1.png"; // Ảnh nền local 1
+import cardBg2 from "../assets/voucher/card2.png"; // Ảnh nền local 2
+import cardBg3 from "../assets/voucher/card3.jpg";
+import cardBg4 from "../assets/voucher/card4.png";
+import cardBg5 from "../assets/voucher/card5.png";
+
 /* ─── ICONS ────────────────────────────────────────────── */
 function IconArrowLeft() {
   return (
@@ -18,7 +21,7 @@ function IconArrowLeft() {
   );
 }
 
-// Hàm IconStarbucksLogoWhite cũ đã được xóa bỏ để code gọn gàng sạch sẽ
+
 
 /* ─── MOCK DATA ────────────────────────────────────────── */
 const MOCK_VOUCHERS = [
@@ -30,8 +33,8 @@ const MOCK_VOUCHERS = [
   { idVoucher: 6, discount: 250000, quantity: 5 },
 ];
 
-// Mảng tự động bốc ảnh cục bộ lặp lại làm nền
-const BG_IMAGES = [cardBg1, cardBg2, cardBg3];
+// Mảng card
+const BG_IMAGES = [cardBg5, cardBg1, cardBg4, cardBg2, cardBg3];
 
 /* ─── COMPONENT ────────────────────────────────────────── */
 export default function Vouchers({ onBack }) {
@@ -202,7 +205,7 @@ export default function Vouchers({ onBack }) {
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                     filter: "blur(3px)",
-                    transform: "scale(1)",
+                    transform: "scale(1.3)",
                     zIndex: 0,
                   }}
                 />
@@ -216,7 +219,7 @@ export default function Vouchers({ onBack }) {
                   }}
                 />
 
-                {/* Nội dung Card - Đã loại bỏ hoàn toàn khối lồng Icon Logo cũ */}
+                {/* Nội dung Card */}
                 <div style={{ position: "relative", zIndex: 2, color: "#fff" }}>
                   <p
                     style={{
