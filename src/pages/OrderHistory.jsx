@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 
-// BẠN COPY ẢNH VÀO THƯ MỤC ASSETS VÀ ĐỔI ĐÚNG TÊN HOẶC LINK Ở ĐÂY NHÉ:
 import bannerImg from "../assets/order/banShip.png"; // Tạm dùng ảnh banner cũ
 import pendingImg from "../assets/voucher/card1.png"; // Ảnh icon trạng thái
 import shippingImg from "../assets/voucher/card1.png";
@@ -221,26 +220,18 @@ export default function OrderHistory({ onBack }) {
       </header>
 
       {/* ════════════════════════════════════════════════════════
-          VIEW 1: MENU 4 TRẠNG THÁI
+          VIEW 1: MENU 4 TRẠNG THÁI 
       ════════════════════════════════════════════════════════ */}
       {view === "menu" && (
-        <main
-          style={{
-            maxWidth: "1200px",
-            margin: "4rem auto",
-            width: "100%",
-            padding: "0 2.4rem",
-          }}
-        >
-          {/* Banner */}
+        <>
+          {/* Banner kéo tràn viền */}
           <div
             style={{
               width: "100%",
-              height: "300px",
-              borderRadius: "1.6rem",
-              overflow: "hidden",
+              height: "350px",
+              position: "relative",
               boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
-              marginBottom: "6rem",
+              marginBottom: "5rem",
             }}
           >
             <img
@@ -250,272 +241,281 @@ export default function OrderHistory({ onBack }) {
             />
           </div>
 
-          {/* 4 Nút Trạng thái */}
-          <div
+          {/* Cụm 4 nút trạng thái được giữ nguyên chiều rộng 1200px */}
+          <main
             style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(4, 1fr)",
-              gap: "4rem",
-              padding: "0 2rem",
+              maxWidth: "1200px",
+              margin: "0 auto",
+              width: "100%",
+              padding: "0 2.4rem",
             }}
           >
-            {/* PENDING */}
             <div
               style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                cursor: "pointer",
+                display: "grid",
+                gridTemplateColumns: "repeat(4, 1fr)",
+                gap: "4rem",
+                padding: "0 2rem",
               }}
-              onClick={() => openStatus("PENDING")}
             >
+              {/* PENDING */}
               <div
                 style={{
-                  position: "relative",
-                  width: "100%",
-                  paddingBottom: "60%",
-                  background: "var(--green-accent)",
-                  borderRadius: "1.2rem",
-                  boxShadow: "var(--card-shadow)",
-                  transition: "transform 0.2s",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  cursor: "pointer",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "translateY(-4px)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "translateY(0)")
-                }
+                onClick={() => openStatus("PENDING")}
               >
-                <img
-                  src={pendingImg}
-                  alt="Pending"
+                <div
                   style={{
-                    position: "absolute",
-                    inset: 0,
+                    position: "relative",
                     width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
+                    paddingBottom: "60%",
+                    background: "var(--green-accent)",
                     borderRadius: "1.2rem",
-                    opacity: 0.8,
+                    boxShadow: "var(--card-shadow)",
+                    transition: "transform 0.2s",
                   }}
-                />
-                {pendingCount > 0 && (
-                  <div
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.transform = "translateY(-4px)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.transform = "translateY(0)")
+                  }
+                >
+                  <img
+                    src={pendingImg}
+                    alt="Pending"
                     style={{
                       position: "absolute",
-                      top: "-1rem",
-                      right: "-1rem",
-                      background: "#fff",
-                      border: "2px solid var(--text-black)",
-                      color: "var(--text-black)",
-                      width: "3rem",
-                      height: "3rem",
-                      borderRadius: "50%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "1.4rem",
-                      fontWeight: 800,
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "1.2rem",
+                      opacity: 0.8,
                     }}
-                  >
-                    {pendingCount}
-                  </div>
-                )}
+                  />
+                  {pendingCount > 0 && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "-1rem",
+                        right: "-1rem",
+                        background: "#fff",
+                        border: "2px solid var(--text-black)",
+                        color: "var(--text-black)",
+                        width: "3rem",
+                        height: "3rem",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1.4rem",
+                        fontWeight: 800,
+                      }}
+                    >
+                      {pendingCount}
+                    </div>
+                  )}
+                </div>
+                <span
+                  style={{
+                    marginTop: "1.6rem",
+                    fontSize: "1.6rem",
+                    fontWeight: 800,
+                    color: "var(--text-black)",
+                  }}
+                >
+                  PENDING
+                </span>
               </div>
-              <span
-                style={{
-                  marginTop: "1.6rem",
-                  fontSize: "1.6rem",
-                  fontWeight: 800,
-                  color: "var(--text-black)",
-                }}
-              >
-                PENDING
-              </span>
-            </div>
 
-            {/* SHIPPING */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                cursor: "pointer",
-              }}
-              onClick={() => openStatus("SHIPPING")}
-            >
+              {/* SHIPPING */}
               <div
                 style={{
-                  position: "relative",
-                  width: "100%",
-                  paddingBottom: "60%",
-                  background: "var(--green-accent)",
-                  borderRadius: "1.2rem",
-                  boxShadow: "var(--card-shadow)",
-                  transition: "transform 0.2s",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  cursor: "pointer",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "translateY(-4px)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "translateY(0)")
-                }
+                onClick={() => openStatus("SHIPPING")}
               >
-                <img
-                  src={shippingImg}
-                  alt="Shipping"
+                <div
                   style={{
-                    position: "absolute",
-                    inset: 0,
+                    position: "relative",
                     width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
+                    paddingBottom: "60%",
+                    background: "var(--green-accent)",
                     borderRadius: "1.2rem",
-                    opacity: 0.8,
+                    boxShadow: "var(--card-shadow)",
+                    transition: "transform 0.2s",
                   }}
-                />
-                {shippingCount > 0 && (
-                  <div
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.transform = "translateY(-4px)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.transform = "translateY(0)")
+                  }
+                >
+                  <img
+                    src={shippingImg}
+                    alt="Shipping"
                     style={{
                       position: "absolute",
-                      top: "-1rem",
-                      right: "-1rem",
-                      background: "#fff",
-                      border: "2px solid var(--text-black)",
-                      color: "var(--text-black)",
-                      width: "3rem",
-                      height: "3rem",
-                      borderRadius: "50%",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      fontSize: "1.4rem",
-                      fontWeight: 800,
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "1.2rem",
+                      opacity: 0.8,
                     }}
-                  >
-                    {shippingCount}
-                  </div>
-                )}
+                  />
+                  {shippingCount > 0 && (
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: "-1rem",
+                        right: "-1rem",
+                        background: "#fff",
+                        border: "2px solid var(--text-black)",
+                        color: "var(--text-black)",
+                        width: "3rem",
+                        height: "3rem",
+                        borderRadius: "50%",
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        fontSize: "1.4rem",
+                        fontWeight: 800,
+                      }}
+                    >
+                      {shippingCount}
+                    </div>
+                  )}
+                </div>
+                <span
+                  style={{
+                    marginTop: "1.6rem",
+                    fontSize: "1.6rem",
+                    fontWeight: 800,
+                    color: "var(--text-black)",
+                  }}
+                >
+                  SHIPPING
+                </span>
               </div>
-              <span
-                style={{
-                  marginTop: "1.6rem",
-                  fontSize: "1.6rem",
-                  fontWeight: 800,
-                  color: "var(--text-black)",
-                }}
-              >
-                SHIPPING
-              </span>
-            </div>
 
-            {/* DELIVERED */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                cursor: "pointer",
-              }}
-              onClick={() => openStatus("DELIVERED")}
-            >
+              {/* DELIVERED */}
               <div
                 style={{
-                  position: "relative",
-                  width: "100%",
-                  paddingBottom: "60%",
-                  background: "var(--green-accent)",
-                  borderRadius: "1.2rem",
-                  boxShadow: "var(--card-shadow)",
-                  transition: "transform 0.2s",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  cursor: "pointer",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "translateY(-4px)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "translateY(0)")
-                }
+                onClick={() => openStatus("DELIVERED")}
               >
-                <img
-                  src={deliveredImg}
-                  alt="Delivered"
+                <div
                   style={{
-                    position: "absolute",
-                    inset: 0,
+                    position: "relative",
                     width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
+                    paddingBottom: "60%",
+                    background: "var(--green-accent)",
                     borderRadius: "1.2rem",
-                    opacity: 0.8,
+                    boxShadow: "var(--card-shadow)",
+                    transition: "transform 0.2s",
                   }}
-                />
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.transform = "translateY(-4px)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.transform = "translateY(0)")
+                  }
+                >
+                  <img
+                    src={deliveredImg}
+                    alt="Delivered"
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "1.2rem",
+                      opacity: 0.8,
+                    }}
+                  />
+                </div>
+                <span
+                  style={{
+                    marginTop: "1.6rem",
+                    fontSize: "1.6rem",
+                    fontWeight: 800,
+                    color: "var(--text-black)",
+                  }}
+                >
+                  DELIVERED
+                </span>
               </div>
-              <span
-                style={{
-                  marginTop: "1.6rem",
-                  fontSize: "1.6rem",
-                  fontWeight: 800,
-                  color: "var(--text-black)",
-                }}
-              >
-                DELIVERED
-              </span>
-            </div>
 
-            {/* CANCELLED */}
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                alignItems: "center",
-                cursor: "pointer",
-              }}
-              onClick={() => openStatus("CANCELLED")}
-            >
+              {/* CANCELLED */}
               <div
                 style={{
-                  position: "relative",
-                  width: "100%",
-                  paddingBottom: "60%",
-                  background: "var(--green-accent)",
-                  borderRadius: "1.2rem",
-                  boxShadow: "var(--card-shadow)",
-                  transition: "transform 0.2s",
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: "center",
+                  cursor: "pointer",
                 }}
-                onMouseEnter={(e) =>
-                  (e.currentTarget.style.transform = "translateY(-4px)")
-                }
-                onMouseLeave={(e) =>
-                  (e.currentTarget.style.transform = "translateY(0)")
-                }
+                onClick={() => openStatus("CANCELLED")}
               >
-                <img
-                  src={cancelledImg}
-                  alt="Cancelled"
+                <div
                   style={{
-                    position: "absolute",
-                    inset: 0,
+                    position: "relative",
                     width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
+                    paddingBottom: "60%",
+                    background: "var(--green-accent)",
                     borderRadius: "1.2rem",
-                    opacity: 0.8,
+                    boxShadow: "var(--card-shadow)",
+                    transition: "transform 0.2s",
                   }}
-                />
+                  onMouseEnter={(e) =>
+                    (e.currentTarget.style.transform = "translateY(-4px)")
+                  }
+                  onMouseLeave={(e) =>
+                    (e.currentTarget.style.transform = "translateY(0)")
+                  }
+                >
+                  <img
+                    src={cancelledImg}
+                    alt="Cancelled"
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      width: "100%",
+                      height: "100%",
+                      objectFit: "cover",
+                      borderRadius: "1.2rem",
+                      opacity: 0.8,
+                    }}
+                  />
+                </div>
+                <span
+                  style={{
+                    marginTop: "1.6rem",
+                    fontSize: "1.6rem",
+                    fontWeight: 800,
+                    color: "var(--text-black)",
+                  }}
+                >
+                  CANCELLED
+                </span>
               </div>
-              <span
-                style={{
-                  marginTop: "1.6rem",
-                  fontSize: "1.6rem",
-                  fontWeight: 800,
-                  color: "var(--text-black)",
-                }}
-              >
-                CANCELLED
-              </span>
             </div>
-          </div>
-        </main>
+          </main>
+        </>
       )}
 
       {/* ════════════════════════════════════════════════════════

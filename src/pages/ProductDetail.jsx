@@ -87,12 +87,15 @@ export default function ProductDetail({ product, onBack, onAddToCart }) {
   if (!product) return null;
 
   const handleAdd = () => {
-    onAddToCart(product, quantity);
-    setAdded(true);
-    setTimeout(() => {
-      setAdded(false);
-      onBack();
-    }, 900);
+    if (!added) {
+      onAddToCart(product, quantity);
+
+      setAdded(true);
+
+      setTimeout(() => {
+        setAdded(false);
+      }, 1500);
+    }
   };
 
   // Luôn cuộn lên trên cùng khi mở

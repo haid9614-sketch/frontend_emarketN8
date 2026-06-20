@@ -80,6 +80,11 @@ export default function App() {
     return <Addresses onBack={() => setPage("home")} />;
   }
 
+  // Màn hình Lịch sử Đơn hàng
+  if (page === "order_history") {
+    return <OrderHistory onBack={() => setPage("home")} />;
+  }
+
   // Màn hình Thanh toán (Checkout)
   if (page === "checkout") {
     // cart data giả lập
@@ -97,12 +102,6 @@ export default function App() {
         },
       ],
     };
-
-    // Màn hình Lịch sử Đơn hàng
-    if (page === "order_history") {
-      return <OrderHistory onBack={() => setPage("home")} />;
-    }
-
     return (
       <Checkout
         cartData={checkoutCart}
