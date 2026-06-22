@@ -1,10 +1,10 @@
 import { useState, useEffect } from "react";
 
-import bannerImg from "../assets/order/banShip.png"; // Tạm dùng ảnh banner cũ
-import pendingImg from "../assets/voucher/card1.png"; // Ảnh icon trạng thái
-import shippingImg from "../assets/voucher/card1.png";
-import deliveredImg from "../assets/voucher/card1.png";
-import cancelledImg from "../assets/voucher/card1.png";
+import bannerImg from "../assets/order/banShip.jpg"; 
+import pendingImg from "../assets/order/pending.png"; // Ảnh icon trạng thái
+import shippingImg from "../assets/order/shipping.png";
+import deliveredImg from "../assets/order/delivered.png";
+import cancelledImg from "../assets/order/cancelled.png";
 
 /* ─── ICONS ────────────────────────────────────────────── */
 function IconArrowLeft() {
@@ -228,7 +228,7 @@ export default function OrderHistory({ onBack }) {
           <div
             style={{
               width: "100%",
-              height: "350px",
+              height: "400px",
               position: "relative",
               boxShadow: "0 4px 20px rgba(0,0,0,0.1)",
               marginBottom: "5rem",

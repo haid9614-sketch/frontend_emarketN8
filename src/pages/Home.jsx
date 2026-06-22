@@ -1,6 +1,9 @@
 import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import BranchPopup from "./BranchPopup";
 import logo from "../assets/logoDS.JPG";
+import banner1 from "../assets/banHome1.jpg";
+import banner2 from "../assets/banHome2.jpg";
+import banner3 from "../assets/banHome3.jpg";
 
 /* ══════════════════════════════════════════════════════════
    MOCK DATA
@@ -22,30 +25,9 @@ const CATEGORIES = [
 ];
 
 const BANNERS = [
-  {
-    id: 1,
-    bg: "linear-gradient(120deg, #1E3932 0%, #006241 60%, #2b5148 100%)",
-    discount: "20%",
-    title: "MỌI MÓN ĐỀU NGON VỚI MEAT Deli",
-    sub: "GIÁ TRỊ SẢN PHẨM",
-    accent: "#cba258",
-  },
-  {
-    id: 2,
-    bg: "linear-gradient(120deg, #00754A 0%, #d4e9e2 100%)",
-    discount: "15%",
-    title: "RAU CỦ QUẢ TƯƠI SẠCH MỖI NGÀY",
-    sub: "CHO ĐƠN HÀNG ĐẦU TIÊN",
-    accent: "#1E3932",
-  },
-  {
-    id: 3,
-    bg: "linear-gradient(120deg, #cba258 0%, #1E3932 100%)",
-    discount: "10%",
-    title: "HOA QUẢ NHẬP KHẨU CAO CẤP",
-    sub: "ƯU ĐÃI HỘI VIÊN",
-    accent: "#fff",
-  },
+  { id: 1, image: banner1 },
+  { id: 2, image: banner2 },
+  { id: 3, image: banner3 },
 ];
 
 const PRODUCTS = [
@@ -279,6 +261,7 @@ export default function Home({
   onVoucherClick,
   onAddressClick,
   onOrderHistoryClick,
+  onRegisterClick,
 }) {
   const [activeTab, setActiveTab] = useState("home");
   const [selectedCat, setSelectedCat] = useState("all");
@@ -502,8 +485,8 @@ export default function Home({
                 borderRadius: "var(--btn-radius)",
                 background: "var(--green-accent)",
                 color: "#fff",
-                fontSize: "1.4rem",
-                fontWeight: 700,
+                fontSize: "1.5rem",
+                fontWeight: 900,
                 border: "none",
                 cursor: "pointer",
                 fontFamily: "inherit",
@@ -544,7 +527,7 @@ export default function Home({
                 Sign in
               </button>
               <button
-                onClick={onLoginClick}
+                onClick={onRegisterClick}
                 style={{
                   padding: "0.7rem 1.6rem",
                   borderRadius: "var(--btn-radius)",
@@ -648,7 +631,7 @@ export default function Home({
                 position: "relative",
                 borderRadius: "1.4rem",
                 overflow: "hidden",
-                height: "18rem",
+                height: "23rem",
                 marginBottom: "2.4rem",
                 boxShadow: "0 2px 12px rgba(0,0,0,0.12)",
               }}
@@ -659,49 +642,14 @@ export default function Home({
                   style={{
                     position: "absolute",
                     inset: 0,
-                    background: b.bg,
-                    display: "flex",
-                    alignItems: "center",
-                    padding: "0 5rem",
+                    backgroundImage: `url(${b.image})`,
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
                     opacity: bannerIdx === i ? 1 : 0,
                     transition: "opacity 0.8s ease",
                     pointerEvents: bannerIdx === i ? "auto" : "none",
                   }}
-                >
-                  <div>
-                    <div
-                      style={{
-                        fontSize: "6rem",
-                        fontWeight: 800,
-                        lineHeight: 1,
-                        color: b.accent,
-                        textShadow: "0 2px 12px rgba(0,0,0,0.25)",
-                      }}
-                    >
-                      {b.discount}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "1.9rem",
-                        fontWeight: 700,
-                        color: "#fff",
-                        marginTop: "0.8rem",
-                        textShadow: "0 1px 4px rgba(0,0,0,0.3)",
-                      }}
-                    >
-                      {b.title}
-                    </div>
-                    <div
-                      style={{
-                        fontSize: "1.4rem",
-                        color: "rgba(255,255,255,0.8)",
-                        marginTop: "0.4rem",
-                      }}
-                    >
-                      {b.sub}
-                    </div>
-                  </div>
-                </div>
+                />
               ))}
               {[
                 { dir: "prev", icon: "‹" },

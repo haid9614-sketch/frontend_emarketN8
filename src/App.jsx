@@ -7,6 +7,7 @@ import Vouchers from "./pages/Vouchers";
 import Addresses from "./pages/Addresses";
 import Checkout from "./pages/Checkout";
 import OrderHistory from "./pages/OrderHistory";
+import Register from "./pages/Register";
 import "./index.css";
 
 export default function App() {
@@ -27,13 +28,33 @@ export default function App() {
     return (
       <Login
         onBack={() => setPage("home")}
-        onLogin={(userData) => {
-          setUser(userData);
+        onGoToRegister={() => setPage("register")} // Bấm chuyển sang trang Đăng ký
+        onLogin={(payload) => {
+          // Demo: Lấy tên từ email hiển thị tạm
+          const name = payload.email.split("@")[0];
+          setUser({ name, ...payload });
           setPage("home");
         }}
       />
     );
   }
+
+  // Màn hình Register
+  if (page === "register") {
+    return (
+      <Register
+        onBack={() => setPage("home")}
+        onGoToLogin={() => setPage("login")} // Bấm chuyển về Đăng nhập
+        onRegisterSuccess={(payload) => {
+          console.log("Dữ liệu gửi API Đăng ký (DTO):", payload);
+          alert("Đăng ký thành công! Đang chuyển về Đăng nhập...");
+          setPage("login");
+        }}
+      />
+    );
+  }
+
+  // Màn hình voucher
   if (page === "voucher") {
     return <Vouchers onBack={() => setPage("home")} />;
   }
@@ -120,6 +141,7 @@ export default function App() {
       user={user}
       savedScroll={homeScroll}
       onLoginClick={() => navigateFromHome("login")}
+      onRegisterClick={() => navigateFromHome("register")}
       onLogout={() => setUser(null)}
       onCartClick={() => navigateFromHome("cart")}
       onProductClick={(product) => {

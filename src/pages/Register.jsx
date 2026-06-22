@@ -15,25 +15,56 @@ function IconArrowLeft() {
   );
 }
 
-export default function Login({ onBack, onLogin, onGoToRegister }) {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+export default function Register({ onBack, onRegisterSuccess, onGoToLogin }) {
+  // Ánh xạ 100% với RegisterRequest DTO
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    age: "",
+    password: "",
+  });
   const [error, setError] = useState("");
 
-  // Luôn cuộn lên trên cùng khi mở trang
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (!email.trim() || !password.trim()) {
-      setError("Vui lòng nhập đầy đủ Email và Mật khẩu.");
+
+    // 1. Kiểm tra rỗng
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.password
+    ) {
+      setError("Vui lòng điền đầy đủ các thông tin bắt buộc (*)");
       return;
     }
 
-    // Gói data gửi lên App.jsx (khớp LoginRequest DTO)
-    onLogin({ email, password });
+    // 2. Validate định dạng Email
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Định dạng email không hợp lệ (Ví dụ: abc@gmail.com)");
+      return;
+    }
+
+    // 3. Validate Mật khẩu tối thiểu 6 ký tự
+    if (formData.password.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự!");
+      return;
+    }
+
+    // Chuyển age thành Integer nếu có nhập, không thì để null
+    const finalData = {
+      ...formData,
+      age: formData.age ? parseInt(formData.age) : null,
+    };
+
+    // Đẩy dữ liệu ra ngoài (Khớp DTO)
+    onRegisterSuccess(finalData);
   };
 
   return (
@@ -97,7 +128,7 @@ export default function Login({ onBack, onLogin, onGoToRegister }) {
           & Dịch vụ
           <span style={{ margin: "0 0.5rem", opacity: 0.4 }}>/</span>{" "}
           <span style={{ color: "var(--text-black)", fontWeight: 600 }}>
-            Đăng nhập
+            Đăng ký thành viên
           </span>
         </p>
       </header>
@@ -106,7 +137,7 @@ export default function Login({ onBack, onLogin, onGoToRegister }) {
       <main
         style={{
           maxWidth: "600px",
-          margin: "6rem auto",
+          margin: "4rem auto",
           width: "100%",
           padding: "0 2.4rem",
         }}
@@ -120,7 +151,7 @@ export default function Login({ onBack, onLogin, onGoToRegister }) {
             marginBottom: "3.2rem",
           }}
         >
-          Đăng nhập tài khoản
+          Tạo tài khoản eMarket
         </h2>
 
         <form
@@ -152,12 +183,68 @@ export default function Login({ onBack, onLogin, onGoToRegister }) {
           )}
 
           <input
-            type="email"
-            required
-            placeholder="Email của bạn"
-            value={email}
+            type="text"
+            placeholder="Họ và tên (*)"
+            value={formData.name}
             onChange={(e) => {
-              setEmail(e.target.value);
+              setFormData({ ...formData, name: e.target.value });
+              setError("");
+            }}
+            style={{
+              width: "100%",
+              padding: "1.6rem",
+              fontSize: "1.6rem",
+              border: "1px solid rgba(0,0,0,0.2)",
+              borderRadius: "0.8rem",
+              outline: "none",
+              fontFamily: "inherit",
+            }}
+          />
+
+          <input
+            type="email"
+            placeholder="Email (*)"
+            value={formData.email}
+            onChange={(e) => {
+              setFormData({ ...formData, email: e.target.value });
+              setError("");
+            }}
+            style={{
+              width: "100%",
+              padding: "1.6rem",
+              fontSize: "1.6rem",
+              border: "1px solid rgba(0,0,0,0.2)",
+              borderRadius: "0.8rem",
+              outline: "none",
+              fontFamily: "inherit",
+            }}
+          />
+
+          <input
+            type="tel"
+            placeholder="Số điện thoại (*)"
+            value={formData.phone}
+            onChange={(e) => {
+              setFormData({ ...formData, phone: e.target.value });
+              setError("");
+            }}
+            style={{
+              width: "100%",
+              padding: "1.6rem",
+              fontSize: "1.6rem",
+              border: "1px solid rgba(0,0,0,0.2)",
+              borderRadius: "0.8rem",
+              outline: "none",
+              fontFamily: "inherit",
+            }}
+          />
+
+          <input
+            type="number"
+            placeholder="Tuổi (Không bắt buộc)"
+            value={formData.age}
+            onChange={(e) => {
+              setFormData({ ...formData, age: e.target.value });
               setError("");
             }}
             style={{
@@ -173,11 +260,10 @@ export default function Login({ onBack, onLogin, onGoToRegister }) {
 
           <input
             type="password"
-            required
-            placeholder="Mật khẩu"
-            value={password}
+            placeholder="Mật khẩu (Tối thiểu 6 ký tự) (*)"
+            value={formData.password}
             onChange={(e) => {
-              setPassword(e.target.value);
+              setFormData({ ...formData, password: e.target.value });
               setError("");
             }}
             style={{
@@ -194,39 +280,10 @@ export default function Login({ onBack, onLogin, onGoToRegister }) {
           <div
             style={{
               display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+              justifyContent: "flex-end",
+              marginTop: "1rem",
             }}
           >
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: "0.8rem",
-              }}
-            >
-              <span
-                style={{
-                  color: "var(--green-accent)",
-                  fontSize: "1.4rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                Forgot your username?
-              </span>
-              <span
-                style={{
-                  color: "var(--green-accent)",
-                  fontSize: "1.4rem",
-                  fontWeight: 600,
-                  cursor: "pointer",
-                }}
-              >
-                Forgot your password?
-              </span>
-            </div>
-
             <button
               type="submit"
               style={{
@@ -245,24 +302,24 @@ export default function Login({ onBack, onLogin, onGoToRegister }) {
               }
               onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
-              Đăng nhập
+              Đăng ký
             </button>
           </div>
 
           <div
             style={{
               textAlign: "center",
-              marginTop: "1.6rem",
+              marginTop: "0.5rem",
               paddingTop: "2.4rem",
               borderTop: "1px solid rgba(0,0,0,0.1)",
               fontSize: "1.5rem",
             }}
           >
             <span style={{ color: "var(--text-black-soft)" }}>
-              Chưa có tài khoản?{" "}
+              Đã có tài khoản?{" "}
             </span>
             <span
-              onClick={onGoToRegister}
+              onClick={onGoToLogin}
               style={{
                 color: "var(--green-accent)",
                 fontWeight: 700,
@@ -270,7 +327,7 @@ export default function Login({ onBack, onLogin, onGoToRegister }) {
                 textDecoration: "underline",
               }}
             >
-              Đăng ký ngay
+              Đăng nhập
             </span>
           </div>
         </form>
