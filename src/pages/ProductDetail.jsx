@@ -235,7 +235,7 @@ export default function ProductDetail({ product, onBack, onAddToCart }) {
             zIndex: 1,
           }}
         >
-          {/* Product image */}
+          {/* Product image  */}
           <div style={{ flexShrink: 0 }}>
             <div
               style={{
@@ -247,22 +247,18 @@ export default function ProductDetail({ product, onBack, onAddToCart }) {
                 boxShadow: "0 0 0 1px rgba(255,255,255,0.1)",
               }}
             >
-              <div
+              <img
+                src={product.imageUrl}
+                alt={product.name}
                 style={{
                   width: "100%",
                   height: "100%",
                   borderRadius: "1.4rem",
-                  background: product.bg,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: "11rem",
+                  objectFit: "cover", // Giúp ảnh tự căn chỉnh đẹp mắt không bị méo
                   boxShadow:
                     "0 32px 64px rgba(0,0,0,0.6), 0 16px 32px rgba(0,0,0,0.35), 0 0 0 1px rgba(255,255,255,0.08)",
                 }}
-              >
-                {product.emoji}
-              </div>
+              />
             </div>
           </div>
 
@@ -393,7 +389,7 @@ export default function ProductDetail({ product, onBack, onAddToCart }) {
                   lineHeight: 1,
                 }}
               >
-                {product.price}
+                {product.price.toLocaleString("vi-VN")}₫
               </p>
               {/* Thẻ Đơn vị - Ánh xạ thẳng vào product.unit */}
               <span

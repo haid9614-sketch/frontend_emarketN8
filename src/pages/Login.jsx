@@ -24,17 +24,40 @@ export default function Login({ onBack, onLogin, onGoToRegister }) {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+ 
+  // api dang nhap
+ const handleSubmit = async (e) => {
+   e.preventDefault();
+   if (!email.trim() || !password.trim()) {
+     setError("Vui lòng nhập đầy đủ Email và Mật khẩu.");
+     return;
+   }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    if (!email.trim() || !password.trim()) {
-      setError("Vui lòng nhập đầy đủ Email và Mật khẩu.");
-      return;
-    }
+   try {
+    
+     const response = await fetch(
+       "http://localhost:8080/api/auth/customer/login",
+       {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify({ email, password }),
+       },
+     );
 
-    // Gói data gửi lên App.jsx (khớp LoginRequest DTO)
-    onLogin({ email, password });
-  };
+     if (response.ok) {
+       const data = await response.json(); // Hứng JwtResponse (token, role, idUser, idBranch)
+       onLogin({ ...data, email }); // Gửi data lên App.jsx xử lý lưu trữ
+     }
+     else {
+       const errText = await response.text();
+       setError(errText || "Đăng nhập thất bại!");
+     }
+   } catch (err) {
+     setError("Không thể kết nối đến Server! Vui lòng kiểm tra lại Backend.");
+   }
+ };
 
   return (
     <div

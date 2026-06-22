@@ -12,7 +12,10 @@ import "./index.css";
 
 export default function App() {
   const [page, setPage] = useState("home");
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const savedUser = localStorage.getItem("user");
+    return savedUser ? JSON.parse(savedUser) : null;
+  });
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [fromPage, setFromPage] = useState("home");
 
@@ -32,11 +35,16 @@ export default function App() {
     return (
       <Login
         onBack={() => setPage("home")}
-        onGoToRegister={() => setPage("register")} // Bấm chuyển sang trang Đăng ký
+        onGoToRegister={() => setPage("register")}
         onLogin={(payload) => {
-          // Demo: Lấy tên từ email hiển thị tạm
+          
           const name = payload.email.split("@")[0];
-          setUser({ name, ...payload });
+          const userData = { name, ...payload };
+
+          setUser(userData);
+          localStorage.setItem("user", JSON.stringify(userData)); 
+          localStorage.setItem("token", payload.token); // Lưu Token
+
           setPage("home");
         }}
       />
@@ -48,10 +56,9 @@ export default function App() {
     return (
       <Register
         onBack={() => setPage("home")}
-        onGoToLogin={() => setPage("login")} // Bấm chuyển về Đăng nhập
-        onRegisterSuccess={(payload) => {
-          console.log("Dữ liệu gửi API Đăng ký (DTO):", payload);
-          alert("Đăng ký thành công! Đang chuyển về Đăng nhập...");
+        onGoToLogin={() => setPage("login")}
+        onRegisterSuccess={(msg) => {
+          alert(msg); 
           setPage("login");
         }}
       />
@@ -152,7 +159,11 @@ export default function App() {
       setAppliedQuery={setHomeAppliedSearch}
       onLoginClick={() => navigateFromHome("login")}
       onRegisterClick={() => navigateFromHome("register")}
-      onLogout={() => setUser(null)}
+      onLogout={() => {
+        setUser(null);
+        localStorage.removeItem("user");
+        localStorage.removeItem("token");
+      }}
       onCartClick={() => navigateFromHome("cart")}
       onProductClick={(product) => {
         setSelectedProduct(product);

@@ -30,42 +30,66 @@ export default function Register({ onBack, onRegisterSuccess, onGoToLogin }) {
     window.scrollTo(0, 0);
   }, []);
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
+  // api dang ki
+ const handleSubmit = async (e) => {
+   e.preventDefault();
 
-    // 1. Kiểm tra rỗng
-    if (
-      !formData.name ||
-      !formData.email ||
-      !formData.phone ||
-      !formData.password
-    ) {
-      setError("Vui lòng điền đầy đủ các thông tin bắt buộc (*)");
-      return;
-    }
+   // 1. Kiểm tra rỗng
+   if (
+     !formData.name ||
+     !formData.email ||
+     !formData.phone ||
+     !formData.password
+   ) {
+     setError("Vui lòng điền đầy đủ các thông tin bắt buộc (*)");
+     return;
+   }
 
-    // 2. Validate định dạng Email
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setError("Định dạng email không hợp lệ (Ví dụ: abc@gmail.com)");
-      return;
-    }
+   // 2. Validate định dạng Email
+   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+   if (!emailRegex.test(formData.email)) {
+     setError("Định dạng email không hợp lệ (Ví dụ: abc@gmail.com)");
+     return;
+   }
 
-    // 3. Validate Mật khẩu tối thiểu 6 ký tự
-    if (formData.password.length < 6) {
-      setError("Mật khẩu phải có ít nhất 6 ký tự!");
-      return;
-    }
+   // 3. Validate Mật khẩu tối thiểu 6 ký tự
+   if (formData.password.length < 6) {
+     setError("Mật khẩu phải có ít nhất 6 ký tự!");
+     return;
+   }
 
-    // Chuyển age thành Integer nếu có nhập, không thì để null
-    const finalData = {
-      ...formData,
-      age: formData.age ? parseInt(formData.age) : null,
-    };
+   const finalData = {
+     ...formData,
+     age: formData.age ? parseInt(formData.age) : null,
+   };
 
-    // Đẩy dữ liệu ra ngoài (Khớp DTO)
-    onRegisterSuccess(finalData);
-  };
+   try {
+    
+     const response = await fetch(
+       "http://localhost:8080/api/auth/customer/register",
+       {
+         method: "POST",
+         headers: {
+           "Content-Type": "application/json",
+         },
+         body: JSON.stringify(finalData),
+       },
+     );
+
+    
+     if (response.ok) {
+       
+       const msg = await response.text();
+       onRegisterSuccess(msg);
+     } else {
+       // Lỗi 400 Bad Request: Do backend trả về (VD: "Thất bại! Email này đã được sử dụng.")
+       const errText = await response.text();
+       setError(errText || "Đăng ký thất bại!");
+     }
+   } catch (err) {
+     setError("Không thể kết nối đến Server! Vui lòng kiểm tra lại Backend.");
+   }
+ };
 
   return (
     <div

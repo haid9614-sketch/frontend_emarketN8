@@ -6,7 +6,7 @@ import banner2 from "../assets/banHome2.jpg";
 import banner3 from "../assets/banHome3.jpg";
 
 /* ══════════════════════════════════════════════════════════
-   MOCK DATA
+  map ID với Database
 ══════════════════════════════════════════════════════════ */
 const NAV_TABS = [
   { id: "home", label: "Trang chủ" },
@@ -14,167 +14,21 @@ const NAV_TABS = [
   { id: "voucher", label: "Voucher" },
 ];
 
+
 const CATEGORIES = [
-  { id: "all", label: "Tất cả" },
-  { id: "meat", label: "Thịt cá" },
-  { id: "veggie", label: "Rau củ" },
-  { id: "fruit", label: "Hoa quả" },
-  { id: "household", label: "Đồ gia dụng" },
-  { id: "snack", label: "Đồ ăn vặt" },
-  { id: "packaged", label: "Đồ đóng gói sẵn" },
+  { id: "all", label: "Tất cả", dbId: null },
+  { id: "meat", label: "Thịt cá", dbId: 1 },
+  { id: "veggie", label: "Rau củ", dbId: 2 },
+  { id: "fruit", label: "Hoa quả", dbId: 3 },
+  { id: "household", label: "Đồ gia dụng", dbId: 4 },
+  { id: "snack", label: "Đồ ăn vặt", dbId: 5 },
+  { id: "packaged", label: "Đồ đóng gói sẵn", dbId: 6 },
 ];
 
 const BANNERS = [
   { id: 1, image: banner1 },
   { id: 2, image: banner2 },
   { id: 3, image: banner3 },
-];
-
-const PRODUCTS = [
-  {
-    id: 1,
-    name: "Trending Coffee",
-    cat: "all",
-    emoji: "☕",
-    bg: "linear-gradient(135deg,#e8c9a0,#c8955a)",
-    price: "65.000₫",
-  },
-  {
-    id: 2,
-    name: "Energy Refreshers",
-    cat: "snack",
-    emoji: "🧃",
-    bg: "linear-gradient(135deg,#f5d8e8,#d888b8)",
-    price: "75.000₫",
-  },
-  {
-    id: 3,
-    name: "Energy Refreshers",
-    cat: "snack",
-    emoji: "🍹",
-    bg: "linear-gradient(135deg,#fde8a0,#f5b040)",
-    price: "72.000₫",
-  },
-  {
-    id: 4,
-    name: "Thịt Bò Wagyu",
-    cat: "meat",
-    emoji: "🥩",
-    bg: "linear-gradient(135deg,#e8a090,#c05040)",
-    price: "320.000₫",
-  },
-  {
-    id: 5,
-    name: "Tôm Sú Tươi",
-    cat: "meat",
-    emoji: "🦐",
-    bg: "linear-gradient(135deg,#f5c0a0,#e07050)",
-    price: "180.000₫",
-  },
-  {
-    id: 6,
-    name: "Cá Hồi Na Uy",
-    cat: "meat",
-    emoji: "🐟",
-    bg: "linear-gradient(135deg,#f0a0c0,#d04080)",
-    price: "250.000₫",
-  },
-  {
-    id: 7,
-    name: "Cà Rốt Hữu Cơ",
-    cat: "veggie",
-    emoji: "🥕",
-    bg: "linear-gradient(135deg,#fdc880,#e87820)",
-    price: "25.000₫",
-  },
-  {
-    id: 8,
-    name: "Bông Cải Xanh",
-    cat: "veggie",
-    emoji: "🥦",
-    bg: "linear-gradient(135deg,#a0e0a0,#40a040)",
-    price: "30.000₫",
-  },
-  {
-    id: 9,
-    name: "Rau Cải Baby",
-    cat: "veggie",
-    emoji: "🥬",
-    bg: "linear-gradient(135deg,#90e090,#409040)",
-    price: "20.000₫",
-  },
-  {
-    id: 10,
-    name: "Táo Fuji Nhật",
-    cat: "fruit",
-    emoji: "🍎",
-    bg: "linear-gradient(135deg,#f08080,#c03030)",
-    price: "85.000₫",
-  },
-  {
-    id: 11,
-    name: "Xoài Cát Hòa Lộc",
-    cat: "fruit",
-    emoji: "🥭",
-    bg: "linear-gradient(135deg,#fdc860,#e88010)",
-    price: "60.000₫",
-  },
-  {
-    id: 12,
-    name: "Nho Đen Mỹ",
-    cat: "fruit",
-    emoji: "🍇",
-    bg: "linear-gradient(135deg,#c0a0e0,#7040a0)",
-    price: "120.000₫",
-  },
-  {
-    id: 13,
-    name: "Nồi Cơm Điện",
-    cat: "household",
-    emoji: "🍚",
-    bg: "linear-gradient(135deg,#a0b0d0,#607090)",
-    price: "450.000₫",
-  },
-  {
-    id: 14,
-    name: "Chảo Chống Dính",
-    cat: "household",
-    emoji: "🍳",
-    bg: "linear-gradient(135deg,#b0c0c0,#607070)",
-    price: "280.000₫",
-  },
-  {
-    id: 15,
-    name: "Snack Khoai Tây",
-    cat: "snack",
-    emoji: "🥔",
-    bg: "linear-gradient(135deg,#f0d890,#c8a030)",
-    price: "35.000₫",
-  },
-  {
-    id: 16,
-    name: "Mì Ăn Liền",
-    cat: "packaged",
-    emoji: "🍜",
-    bg: "linear-gradient(135deg,#f5a870,#d06020)",
-    price: "15.000₫",
-  },
-  {
-    id: 17,
-    name: "Chả Giò Hải Sản",
-    cat: "packaged",
-    emoji: "🥟",
-    bg: "linear-gradient(135deg,#f0b0a0,#d05040)",
-    price: "55.000₫",
-  },
-  {
-    id: 18,
-    name: "Cháo Ăn Liền",
-    cat: "packaged",
-    emoji: "🥣",
-    bg: "linear-gradient(135deg,#f5e090,#c8a030)",
-    price: "18.000₫",
-  },
 ];
 
 /* ══════════════════════════════════════════════════════════
@@ -219,7 +73,6 @@ function IconOrder({ color = "white" }) {
     </svg>
   );
 }
-
 function IconCart({ color = "white" }) {
   return (
     <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
@@ -235,7 +88,6 @@ function IconCart({ color = "white" }) {
     </svg>
   );
 }
-
 function IconPin({ color = "currentColor" }) {
   return (
     <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
@@ -270,22 +122,71 @@ export default function Home({
   setAppliedQuery,
 }) {
   const [activeTab, setActiveTab] = useState("home");
-  //const [selectedCat, setSelectedCat] = useState("all");
   const [showPopup, setShowPopup] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [cartCount, setCartCount] = useState(2);
   const [bannerIdx, setBannerIdx] = useState(0);
-  //const [searchQuery, setSearchQuery] = useState("");
-  //const [appliedQuery, setAppliedQuery] = useState("");
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef({});
 
-  // Tự động cuộn đến vị trí đã lưu khi quay lại Home
+  // STATE HỨNG DỮ LIỆU TỪ API
+  const [products, setProducts] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  const hasRestoredScroll = useRef(false);
+
+  // LOGIC BRANCH & GỌI API
   useEffect(() => {
-    setTimeout(() => {
-      window.scrollTo(0, savedScroll || 0);
-    }, 0);
-  }, [savedScroll]);
+    
+    let currentBranchId = localStorage.getItem("idBranch");
+    if (!currentBranchId) {
+      currentBranchId = "1";
+      setShowPopup(true);
+    } else if (!selectedBranch) {
+    
+      setSelectedBranch({
+        id: currentBranchId,
+        name: `Chi nhánh ID: ${currentBranchId}`,
+      });
+    }
+
+    // 2. Hàm kéo dữ liệu từ Spring Boot
+    const fetchProducts = async () => {
+      setLoading(true);
+      try {
+        const activeCatObj = CATEGORIES.find((c) => c.id === selectedCat);
+        const categoryId = activeCatObj?.dbId;
+
+        // Xây dựng URL động dựa trên các tham số
+        let url = `http://localhost:8080/api/products?idBranch=${currentBranchId}&size=50`;
+        if (categoryId) url += `&categoryId=${categoryId}`;
+        if (appliedQuery) url += `&keyword=${appliedQuery}`;
+
+        const response = await fetch(url);
+        if (response.ok) {
+          const data = await response.json(); // Nhận Page<ProductResponse>
+          setProducts(data.content); 
+        }
+      } catch (error) {
+        console.error("Lỗi khi tải sản phẩm:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProducts();
+  }, [selectedCat, appliedQuery, selectedBranch]); 
+
+  // Tự động cuộn đến vị trí đã lưu
+ useEffect(() => {
+   
+   if (!loading && !hasRestoredScroll.current) {
+     setTimeout(() => {
+       window.scrollTo(0, savedScroll || 0);
+     }, 100); 
+     hasRestoredScroll.current = true;
+   }
+ }, [loading, savedScroll]);
 
   useLayoutEffect(() => {
     const el = tabRefs.current[activeTab];
@@ -299,14 +200,6 @@ export default function Home({
     );
     return () => clearInterval(t);
   }, []);
-
-  const visibleProducts = PRODUCTS.filter((p) => {
-    const matchCat = selectedCat === "all" || p.cat === selectedCat;
-    const matchQ =
-      appliedQuery === "" ||
-      p.name.toLowerCase().includes(appliedQuery.toLowerCase());
-    return matchCat && matchQ;
-  });
 
   const addToCart = () => setCartCount((c) => c + 1);
   const branchLabel = selectedBranch?.name ?? null;
@@ -349,20 +242,16 @@ export default function Home({
             />
           </div>
 
-          {/* Nav tabs + sliding indicator */}
+          {/* Nav tabs */}
           <div style={{ position: "relative", display: "flex" }}>
             {NAV_TABS.map((tab) => (
               <button
                 key={tab.id}
                 ref={(el) => (tabRefs.current[tab.id] = el)}
                 onClick={() => {
-                  if (tab.id === "voucher") {
-                    onVoucherClick(); // Chuyển sang trang Voucher
-                  } else if (tab.id === "address") {
-                    onAddressClick();
-                  } else {
-                    setActiveTab(tab.id); // Đổi tab bình thường
-                  }
+                  if (tab.id === "voucher") onVoucherClick();
+                  else if (tab.id === "address") onAddressClick();
+                  else setActiveTab(tab.id);
                 }}
                 style={{
                   padding: "0 1.6rem",
@@ -375,7 +264,6 @@ export default function Home({
                   cursor: "pointer",
                   fontFamily: "inherit",
                   whiteSpace: "nowrap",
-                  letterSpacing: "-0.01em",
                 }}
               >
                 {tab.label}
@@ -390,8 +278,7 @@ export default function Home({
                 borderRadius: "3px 3px 0 0",
                 left: indicatorStyle.left + "px",
                 width: indicatorStyle.width + "px",
-                transition:
-                  "left 0.28s cubic-bezier(.4,0,.2,1), width 0.28s cubic-bezier(.4,0,.2,1)",
+                transition: "all 0.28s cubic-bezier(.4,0,.2,1)",
               }}
             />
           </div>
@@ -440,13 +327,12 @@ export default function Home({
                   fontSize: "1.5rem",
                   fontFamily: "inherit",
                   letterSpacing: "-0.01em",
-                  "::placeholder": { color: "rgba(255,255,255,0.55)" },
                 }}
               />
             </form>
           </div>
 
-          {/* Branch / location button */}
+          {/* Branch button */}
           <button
             onClick={() => setShowPopup(true)}
             style={{
@@ -496,14 +382,8 @@ export default function Home({
                 border: "none",
                 cursor: "pointer",
                 fontFamily: "inherit",
-                letterSpacing: "-0.01em",
                 flexShrink: 0,
-                transition: "transform 0.15s",
               }}
-              onMouseDown={(e) =>
-                (e.currentTarget.style.transform = "scale(0.95)")
-              }
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
             >
               {user.name}
             </button>
@@ -521,14 +401,7 @@ export default function Home({
                   fontWeight: 600,
                   cursor: "pointer",
                   fontFamily: "inherit",
-                  transition: "transform 0.15s",
                 }}
-                onMouseDown={(e) =>
-                  (e.currentTarget.style.transform = "scale(0.95)")
-                }
-                onMouseUp={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
               >
                 Sign in
               </button>
@@ -544,14 +417,7 @@ export default function Home({
                   border: "1px solid #000",
                   cursor: "pointer",
                   fontFamily: "inherit",
-                  transition: "transform 0.15s",
                 }}
-                onMouseDown={(e) =>
-                  (e.currentTarget.style.transform = "scale(0.95)")
-                }
-                onMouseUp={(e) =>
-                  (e.currentTarget.style.transform = "scale(1)")
-                }
               >
                 Join now
               </button>
@@ -611,7 +477,6 @@ export default function Home({
                       fontWeight: selectedCat === cat.id ? 700 : 400,
                       cursor: "pointer",
                       fontFamily: "inherit",
-                      letterSpacing: "-0.01em",
                       transition: "color 0.15s",
                     }}
                   >
@@ -681,58 +546,32 @@ export default function Home({
                     background: "rgba(255,255,255,0.25)",
                     color: "#fff",
                     fontSize: "2.4rem",
-                    lineHeight: 1,
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     border: "1px solid rgba(255,255,255,0.4)",
                     cursor: "pointer",
-                    transition: "background 0.2s",
                   }}
-                  onMouseEnter={(e) =>
-                    (e.currentTarget.style.background =
-                      "rgba(255,255,255,0.45)")
-                  }
-                  onMouseLeave={(e) =>
-                    (e.currentTarget.style.background =
-                      "rgba(255,255,255,0.25)")
-                  }
                 >
                   {icon}
                 </button>
               ))}
-              {/* Dot indicators */}
-              <div
-                style={{
-                  position: "absolute",
-                  bottom: "1.2rem",
-                  right: "2rem",
-                  display: "flex",
-                  gap: "0.6rem",
-                }}
-              >
-                {BANNERS.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setBannerIdx(i)}
-                    style={{
-                      height: "0.8rem",
-                      width: bannerIdx === i ? "2.4rem" : "0.8rem",
-                      borderRadius: "var(--btn-radius)",
-                      background:
-                        bannerIdx === i ? "#fff" : "rgba(255,255,255,0.5)",
-                      border: "none",
-                      cursor: "pointer",
-                      transition: "all 0.3s ease",
-                      padding: 0,
-                    }}
-                  />
-                ))}
-              </div>
             </div>
 
-            {/* Product grid */}
-            {visibleProducts.length === 0 ? (
+            {/* Product grid (Kéo từ API) */}
+            {loading ? (
+              <div
+                style={{
+                  textAlign: "center",
+                  padding: "6rem 0",
+                  color: "var(--text-black)",
+                  fontSize: "1.8rem",
+                  fontWeight: 700,
+                }}
+              >
+                Đang tải sản phẩm...
+              </div>
+            ) : products.length === 0 ? (
               <div
                 style={{
                   textAlign: "center",
@@ -741,7 +580,7 @@ export default function Home({
                   fontSize: "1.6rem",
                 }}
               >
-                Không tìm thấy sản phẩm nào.
+                Không tìm thấy sản phẩm nào ở chi nhánh này.
               </div>
             ) : (
               <div
@@ -751,9 +590,9 @@ export default function Home({
                   gap: "1.6rem",
                 }}
               >
-                {visibleProducts.map((p) => (
+                {products.map((p) => (
                   <ProductCard
-                    key={p.id}
+                    key={p.idProduct}
                     product={p}
                     onAdd={addToCart}
                     onClick={() => onProductClick(p)}
@@ -803,18 +642,7 @@ export default function Home({
               fontSize: "1.4rem",
               fontWeight: 600,
               cursor: "pointer",
-              transition: "all 0.2s ease",
             }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.background = "rgba(255,255,255,0.1)")
-            }
-            onMouseLeave={(e) =>
-              (e.currentTarget.style.background = "transparent")
-            }
-            onMouseDown={(e) =>
-              (e.currentTarget.style.transform = "scale(0.95)")
-            }
-            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
           >
             <IconOrder /> Đơn hàng của bạn
           </button>
@@ -830,27 +658,21 @@ export default function Home({
               display: "flex",
               alignItems: "center",
               justifyContent: "center",
-              boxShadow:
-                "0 0 6px rgba(0,0,0,0.24), 0 8px 12px rgba(0,0,0,0.14)",
-              transition: "transform 0.15s",
             }}
-            onMouseDown={(e) =>
-              (e.currentTarget.style.transform = "scale(0.95)")
-            }
-            onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-            title="Xem giỏ hàng"
           >
             <IconCart />
           </button>
         </div>
       </div>
 
+      {/* HIỂN THỊ POPUP NẾU CHƯA CHỌN CHI NHÁNH HOẶC BẤM NÚT ĐỔI */}
       {showPopup && (
         <BranchPopup
           selectedBranch={selectedBranch}
           onClose={() => setShowPopup(false)}
           onSelectBranch={(branch) => {
             setSelectedBranch(branch);
+            localStorage.setItem("idBranch", branch.id); 
             setShowPopup(false);
           }}
         />
@@ -859,24 +681,31 @@ export default function Home({
   );
 }
 
-/* ── Product Card Component ── */
+/* ── Product Card Component  ── */
 function ProductCard({ product, onAdd, onClick }) {
   const [hovered, setHovered] = useState(false);
+  const isOutOfStock = product.stockQuantity === 0;
+
   return (
     <div
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
-      onClick={onClick}
+      onClick={() => {
+        if (!isOutOfStock) onClick();
+      }}
       style={{
         background: "#fff",
         borderRadius: "var(--card-radius)",
-        boxShadow: hovered
-          ? "0 4px 16px rgba(0,0,0,0.13)"
-          : "var(--card-shadow)",
+        boxShadow:
+          hovered && !isOutOfStock
+            ? "0 4px 16px rgba(0,0,0,0.13)"
+            : "var(--card-shadow)",
         overflow: "hidden",
-        cursor: "pointer",
-        transform: hovered ? "translateY(-2px)" : "translateY(0)",
+        cursor: isOutOfStock ? "not-allowed" : "pointer",
+        transform:
+          hovered && !isOutOfStock ? "translateY(-2px)" : "translateY(0)",
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
+        opacity: isOutOfStock ? 0.6 : 1, // Làm mờ nếu hết hàng
       }}
     >
       <div
@@ -884,22 +713,49 @@ function ProductCard({ product, onAdd, onClick }) {
           width: "100%",
           paddingBottom: "100%",
           position: "relative",
-          background: product.bg,
+          background: "#f9f9f9",
         }}
       >
-        <div
+        {/* Render ảnh thật từ Cloudinary */}
+        <img
+          src={product.imageUrl}
+          alt={product.name}
           style={{
             position: "absolute",
             inset: 0,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "5.5rem",
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
           }}
-        >
-          {product.emoji}
-        </div>
+        />
+        {/* Nhãn Hết Hàng đè lên ảnh */}
+        {isOutOfStock && (
+          <div
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "rgba(0,0,0,0.4)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+            }}
+          >
+            <span
+              style={{
+                background: "#d13239",
+                color: "#fff",
+                padding: "0.6rem 1.6rem",
+                borderRadius: "50px",
+                fontWeight: 800,
+                fontSize: "1.4rem",
+              }}
+            >
+              HẾT HÀNG
+            </span>
+          </div>
+        )}
       </div>
+
       <div style={{ padding: "1.2rem 1.4rem 1.4rem" }}>
         <p
           style={{
@@ -922,9 +778,21 @@ function ProductCard({ product, onAdd, onClick }) {
             marginBottom: "1rem",
           }}
         >
-          {product.price}
+          {/* Định dạng tiền VND */}
+          {product.price.toLocaleString("vi-VN")}₫
+          <span
+            style={{
+              fontSize: "1.2rem",
+              fontWeight: 500,
+              color: "var(--text-black-soft)",
+              marginLeft: "0.4rem",
+            }}
+          >
+            ({product.unit})
+          </span>
         </p>
         <button
+          disabled={isOutOfStock}
           onClick={(e) => {
             e.stopPropagation();
             onAdd();
@@ -933,23 +801,15 @@ function ProductCard({ product, onAdd, onClick }) {
             width: "100%",
             padding: "0.6rem 0",
             borderRadius: "var(--btn-radius)",
-            background: "var(--green-accent)",
+            background: isOutOfStock ? "#ccc" : "var(--green-accent)",
             color: "#fff",
             fontSize: "1.3rem",
             fontWeight: 700,
             border: "none",
-            cursor: "pointer",
-            fontFamily: "inherit",
-            transition: "transform 0.15s, background 0.15s",
+            cursor: isOutOfStock ? "not-allowed" : "pointer",
           }}
-          onMouseDown={(e) => (e.currentTarget.style.transform = "scale(0.95)")}
-          onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          onMouseEnter={(e) => (e.currentTarget.style.background = "#006241")}
-          onMouseLeave={(e) =>
-            (e.currentTarget.style.background = "var(--green-accent)")
-          }
         >
-          + Thêm vào giỏ
+          {isOutOfStock ? "Tạm hết" : "+ Thêm vào giỏ"}
         </button>
       </div>
     </div>
