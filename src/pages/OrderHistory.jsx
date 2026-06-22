@@ -578,7 +578,7 @@ export default function OrderHistory({ onBack }) {
                       gap: "0.6rem",
                     }}
                   >
-                    🚚 {getStatusText(order.status)}
+                     {getStatusText(order.status)}
                   </span>
                 </div>
 

@@ -262,15 +262,21 @@ export default function Home({
   onAddressClick,
   onOrderHistoryClick,
   onRegisterClick,
+  selectedCat,
+  setSelectedCat,
+  searchQuery,
+  setSearchQuery,
+  appliedQuery,
+  setAppliedQuery,
 }) {
   const [activeTab, setActiveTab] = useState("home");
-  const [selectedCat, setSelectedCat] = useState("all");
+  //const [selectedCat, setSelectedCat] = useState("all");
   const [showPopup, setShowPopup] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
   const [cartCount, setCartCount] = useState(2);
   const [bannerIdx, setBannerIdx] = useState(0);
-  const [searchQuery, setSearchQuery] = useState("");
-  const [appliedQuery, setAppliedQuery] = useState("");
+  //const [searchQuery, setSearchQuery] = useState("");
+  //const [appliedQuery, setAppliedQuery] = useState("");
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef({});
 

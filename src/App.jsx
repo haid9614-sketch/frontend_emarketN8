@@ -18,6 +18,10 @@ export default function App() {
 
   const [homeScroll, setHomeScroll] = useState(0);
 
+  const [homeCategory, setHomeCategory] = useState("all");
+  const [homeSearch, setHomeSearch] = useState("");
+  const [homeAppliedSearch, setHomeAppliedSearch] = useState("");
+
   const navigateFromHome = (targetPage) => {
     setHomeScroll(window.scrollY); // Lưu lại vị trí đang đứng
     setPage(targetPage); // Chuyển trang
@@ -140,6 +144,12 @@ export default function App() {
     <Home
       user={user}
       savedScroll={homeScroll}
+      selectedCat={homeCategory}
+      setSelectedCat={setHomeCategory}
+      searchQuery={homeSearch}
+      setSearchQuery={setHomeSearch}
+      appliedQuery={homeAppliedSearch}
+      setAppliedQuery={setHomeAppliedSearch}
       onLoginClick={() => navigateFromHome("login")}
       onRegisterClick={() => navigateFromHome("register")}
       onLogout={() => setUser(null)}
