@@ -137,13 +137,11 @@ export default function Home({
 
   // LOGIC BRANCH & GỌI API
   useEffect(() => {
-    
     let currentBranchId = localStorage.getItem("idBranch");
     if (!currentBranchId) {
       currentBranchId = "1";
       setShowPopup(true);
     } else if (!selectedBranch) {
-    
       setSelectedBranch({
         id: currentBranchId,
         name: `Chi nhánh ID: ${currentBranchId}`,
@@ -165,7 +163,7 @@ export default function Home({
         const response = await fetch(url);
         if (response.ok) {
           const data = await response.json(); // Nhận Page<ProductResponse>
-          setProducts(data.content); 
+          setProducts(data.content);
         }
       } catch (error) {
         console.error("Lỗi khi tải sản phẩm:", error);
@@ -175,18 +173,17 @@ export default function Home({
     };
 
     fetchProducts();
-  }, [selectedCat, appliedQuery, selectedBranch]); 
+  }, [selectedCat, appliedQuery, selectedBranch]);
 
   // Tự động cuộn đến vị trí đã lưu
- useEffect(() => {
-   
-   if (!loading && !hasRestoredScroll.current) {
-     setTimeout(() => {
-       window.scrollTo(0, savedScroll || 0);
-     }, 100); 
-     hasRestoredScroll.current = true;
-   }
- }, [loading, savedScroll]);
+  useEffect(() => {
+    if (!loading && !hasRestoredScroll.current) {
+      setTimeout(() => {
+        window.scrollTo(0, savedScroll || 0);
+      }, 100);
+      hasRestoredScroll.current = true;
+    }
+  }, [loading, savedScroll]);
 
   useLayoutEffect(() => {
     const el = tabRefs.current[activeTab];
@@ -201,7 +198,46 @@ export default function Home({
     return () => clearInterval(t);
   }, []);
 
-  const addToCart = () => setCartCount((c) => c + 1);
+  
+  // HÀM GỌI API THÊM VÀO GIỎ HÀNG
+  const handleAddToCart = async (product) => {
+    const token = localStorage.getItem("token");
+    const currentBranchId = localStorage.getItem("idBranch") || "1";
+
+    if (!token) {
+      alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!");
+      onLoginClick();
+      return false; // Báo thất bại
+    }
+
+    try {
+      const res = await fetch("http://localhost:8080/api/carts/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          idProduct: product.idProduct,
+          quantity: 1,
+          idBranch: parseInt(currentBranchId),
+        }),
+      });
+
+      if (res.ok) {
+        setCartCount((c) => c + 1); 
+        return true; // Báo thành công
+      } else {
+        const errText = await res.text();
+        alert(errText);
+        return false;
+      }
+    } catch (err) {
+      alert("Lỗi kết nối máy chủ!");
+      return false;
+    }
+  };
+
   const branchLabel = selectedBranch?.name ?? null;
 
   return (
@@ -594,7 +630,7 @@ export default function Home({
                   <ProductCard
                     key={p.idProduct}
                     product={p}
-                    onAdd={addToCart}
+                    onAdd={() => handleAddToCart(p)}
                     onClick={() => onProductClick(p)}
                   />
                 ))}
@@ -672,7 +708,7 @@ export default function Home({
           onClose={() => setShowPopup(false)}
           onSelectBranch={(branch) => {
             setSelectedBranch(branch);
-            localStorage.setItem("idBranch", branch.id); 
+            localStorage.setItem("idBranch", branch.id);
             setShowPopup(false);
           }}
         />
@@ -681,10 +717,25 @@ export default function Home({
   );
 }
 
-/* ── Product Card Component  ── */
+/* ── Product Card Component ── */
 function ProductCard({ product, onAdd, onClick }) {
   const [hovered, setHovered] = useState(false);
+  const [added, setAdded] = useState(false); 
   const isOutOfStock = product.stockQuantity === 0;
+
+  // Xử lý logic bấm nút thêm
+  const handleAddClick = async (e) => {
+    e.stopPropagation();
+    if (isOutOfStock || added) return; 
+
+    const isSuccess = await onAdd(); 
+    if (isSuccess) {
+      setAdded(true); // Biến nút thành ✓ Đã thêm
+      setTimeout(() => {
+        setAdded(false); // 1.5 giây sau trả về như cũ
+      }, 1500); 
+    }
+  };
 
   return (
     <div
@@ -705,7 +756,7 @@ function ProductCard({ product, onAdd, onClick }) {
         transform:
           hovered && !isOutOfStock ? "translateY(-2px)" : "translateY(0)",
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
-        opacity: isOutOfStock ? 0.6 : 1, // Làm mờ nếu hết hàng
+        opacity: isOutOfStock ? 0.6 : 1, 
       }}
     >
       <div
@@ -716,7 +767,6 @@ function ProductCard({ product, onAdd, onClick }) {
           background: "#f9f9f9",
         }}
       >
-        {/* Render ảnh thật từ Cloudinary */}
         <img
           src={product.imageUrl}
           alt={product.name}
@@ -728,7 +778,6 @@ function ProductCard({ product, onAdd, onClick }) {
             objectFit: "cover",
           }}
         />
-        {/* Nhãn Hết Hàng đè lên ảnh */}
         {isOutOfStock && (
           <div
             style={{
@@ -778,7 +827,6 @@ function ProductCard({ product, onAdd, onClick }) {
             marginBottom: "1rem",
           }}
         >
-          {/* Định dạng tiền VND */}
           {product.price.toLocaleString("vi-VN")}₫
           <span
             style={{
@@ -791,25 +839,29 @@ function ProductCard({ product, onAdd, onClick }) {
             ({product.unit})
           </span>
         </p>
+        
+        {/* NÚT THÊM VÀO GIỎ  */}
         <button
-          disabled={isOutOfStock}
-          onClick={(e) => {
-            e.stopPropagation();
-            onAdd();
-          }}
+          disabled={isOutOfStock || added}
+          onClick={handleAddClick}
           style={{
             width: "100%",
             padding: "0.6rem 0",
             borderRadius: "var(--btn-radius)",
-            background: isOutOfStock ? "#ccc" : "var(--green-accent)",
+            background: added ? "var(--green-starbucks)" : (isOutOfStock ? "#ccc" : "var(--green-accent)"),
             color: "#fff",
             fontSize: "1.3rem",
             fontWeight: 700,
             border: "none",
-            cursor: isOutOfStock ? "not-allowed" : "pointer",
+            cursor: (isOutOfStock || added) ? "not-allowed" : "pointer",
+            transition: "transform 0.15s, background 0.15s",
           }}
+          onMouseDown={(e) => !added && !isOutOfStock && (e.currentTarget.style.transform = "scale(0.95)")}
+          onMouseUp={(e) => !added && !isOutOfStock && (e.currentTarget.style.transform = "scale(1)")}
+          onMouseEnter={(e) => !added && !isOutOfStock && (e.currentTarget.style.background = "#006241")}
+          onMouseLeave={(e) => !added && !isOutOfStock && (e.currentTarget.style.background = "var(--green-accent)")}
         >
-          {isOutOfStock ? "Tạm hết" : "+ Thêm vào giỏ"}
+          {added ? "✓ Đã thêm" : (isOutOfStock ? "Tạm hết" : "+ Thêm vào giỏ")}
         </button>
       </div>
     </div>

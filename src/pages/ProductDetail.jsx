@@ -86,15 +86,43 @@ export default function ProductDetail({ product, onBack, onAddToCart }) {
 
   if (!product) return null;
 
-  const handleAdd = () => {
-    if (!added) {
-      onAddToCart(product, quantity);
+  const handleAdd = async () => {
+    if (added) return; // Nếu đang hiện dấu ✓ thì không cho bấm liên tục
 
-      setAdded(true);
+    const token = localStorage.getItem("token");
+    const currentBranchId = localStorage.getItem("idBranch") || "1";
 
-      setTimeout(() => {
-        setAdded(false);
-      }, 1500);
+    if (!token) {
+      alert("Vui lòng đăng nhập để mua hàng!");
+      return;
+    }
+
+    try {
+      const res = await fetch("http://localhost:8080/api/carts/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          idProduct: product.idProduct,
+          quantity: quantity, 
+          idBranch: parseInt(currentBranchId),
+        }),
+      });
+
+      if (res.ok) {
+        // Nổi hiệu ứng ✓ Đã thêm vào giỏ!
+        setAdded(true);
+        setTimeout(() => {
+          setAdded(false);
+        }, 1500);
+      } else {
+        const errText = await res.text();
+        alert(errText);
+      }
+    } catch (err) {
+      alert("Lỗi kết nối máy chủ!");
     }
   };
 
@@ -111,7 +139,7 @@ export default function ProductDetail({ product, onBack, onAddToCart }) {
         display: "flex",
         flexDirection: "column",
         fontFamily: "'Manrope','Helvetica Neue',Helvetica,Arial,sans-serif",
-        paddingBottom: "5.6rem", // Thêm padding đáy để không bị thanh footer đè lên nội dung
+        paddingBottom: "5.6rem", 
       }}
     >
       {/* ── HEADER ── */}
