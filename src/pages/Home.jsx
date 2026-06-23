@@ -2,7 +2,7 @@ import { useState, useEffect, useRef, useLayoutEffect } from "react";
 import BranchPopup from "./BranchPopup";
 import logo from "../assets/logoDS.JPG";
 import banner1 from "../assets/banHome1.jpg";
-import banner2 from "../assets/banHome2.jpg";
+import banner2 from "../assets/banHome2.png";
 import banner3 from "../assets/banHome3.jpg";
 
 /* ══════════════════════════════════════════════════════════

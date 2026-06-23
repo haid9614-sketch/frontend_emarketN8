@@ -1,18 +1,33 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 import creditCard from "../assets/creditCard.png";
 
 /* ─── ICONS ────────────────────────────────────────────── */
 function IconArrowLeft() {
   return (
     <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
-      <path d="M11 14L6 9l5-5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+      <path
+        d="M11 14L6 9l5-5"
+        stroke="white"
+        strokeWidth="2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
     </svg>
   );
 }
 
 function IconLocation() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
       <circle cx="12" cy="10" r="3"></circle>
     </svg>
@@ -21,7 +36,16 @@ function IconLocation() {
 
 function IconTicket() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="20"
+      height="20"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <path d="M4 7v3.859c0 .537-.213 1.052-.593 1.432L2 13.707l1.407 1.416A2.025 2.025 0 0 0 4 15.714V19a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-3.286c0-.537.213-1.052.593-1.432L22 12.857l-1.407-1.416A2.025 2.025 0 0 0 20 10.027V7a2 2 0 0 0-2-2H6a2 2 0 0 0-2 2z"></path>
       <line x1="9" y1="9" x2="15" y2="15"></line>
       <line x1="15" y1="9" x2="15.01" y2="9"></line>
@@ -32,83 +56,179 @@ function IconTicket() {
 
 function IconCheck() {
   return (
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round">
+    <svg
+      width="16"
+      height="16"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="3"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       <polyline points="20 6 9 17 4 12"></polyline>
     </svg>
   );
 }
 
-/* ─── MOCK DATA ────────────────────────────────────────── */
-const MOCK_ADDRESSES = [
-  { idAddress: 1, name: "Tạ Hải Dương", sdt: "(+84) 865 032 770", houseNumber: "Số 22, Ngõ 215 Định Công Thượng", ward: "Định Công", district: "Hoàng Mai", city: "Hà Nội" }
-];
-
-const MOCK_VOUCHERS = [
-  { idVoucher: 1, discount: 20000, quantity: 50 },
-  { idVoucher: 2, discount: 50000, quantity: 15 },
-  { idVoucher: 3, discount: 15000, quantity: 100 },
-];
-
 /* ─── COMPONENT CHÍNH ───────────────────────────────────── */
 export default function Checkout({ cartData, onBack, onOrderSuccess }) {
-  // State quản lý dữ liệu
-  const [addresses, setAddresses] = useState(MOCK_ADDRESSES);
-  const [selectedAddress, setSelectedAddress] = useState(MOCK_ADDRESSES[0] || null);
+  // State API Data
+  const [addresses, setAddresses] = useState([]);
+  const [vouchers, setVouchers] = useState([]);
+
+  // State Selected
+  const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
-  
+
   // DTO States
-  const [paymentMethod, setPaymentMethod] = useState('COD'); // COD, Banking, MOMO
-  const [note, setNote] = useState('');
+  const [paymentMethod, setPaymentMethod] = useState("COD");
+  const [note, setNote] = useState("");
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Popups state
   const [showAddressPopup, setShowAddressPopup] = useState(false);
   const [showVoucherPopup, setShowVoucherPopup] = useState(false);
-  const [isAddingAddress, setIsAddingAddress] = useState(false); // Bật form thêm địa chỉ nhanh
-  const [newAddressForm, setNewAddressForm] = useState({ name: '', sdt: '', houseNumber: '', ward: '', district: '', city: '' });
+  const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [newAddressForm, setNewAddressForm] = useState({
+    name: "",
+    sdt: "",
+    houseNumber: "",
+    ward: "",
+    district: "",
+    city: "",
+  });
 
-  useEffect(() => { window.scrollTo(0, 0); }, []);
+  const token = localStorage.getItem("token");
 
-  if (!cartData || !cartData.items) return null; // Fallback nếu vào thẳng trang mà chưa có giỏ hàng
+  // Hàm gọi API lấy danh sách địa chỉ
+  const fetchAddresses = async () => {
+    try {
+      const res = await fetch(
+        "http://localhost:8080/api/addresses/my-addresses",
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAddresses(data);
+        if (data.length > 0 && !selectedAddress) {
+          setSelectedAddress(data[0]);
+        }
+      }
+    } catch (err) {
+      console.error("Lỗi tải địa chỉ:", err);
+    }
+  };
+
+  // Hàm gọi API lấy danh sách Voucher
+  const fetchVouchers = async () => {
+    try {
+      const res = await fetch("http://localhost:8080/api/voucher", {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setVouchers(data);
+      }
+    } catch (err) {
+      console.error("Lỗi tải voucher:", err);
+    }
+  };
+
+  // Tự động cuộn trang và tải dữ liệu khi vào trang Checkout
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (token) {
+      fetchAddresses();
+      fetchVouchers();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if (!cartData || !cartData.items) return null;
 
   // Tính toán tiền
   const subTotal = cartData.totalPrice || 0;
   const discountAmount = selectedVoucher ? selectedVoucher.discount : 0;
-  const totalPayment = Math.max(0, subTotal - discountAmount); // Đảm bảo không âm tiền
+  const totalPayment = Math.max(0, subTotal - discountAmount);
 
-  // ── XỬ LÝ NÚT ĐẶT HÀNG (Mapping vào DTO CheckoutRequest) ──
-  const handlePlaceOrder = () => {
+  // ── XỬ LÝ NÚT ĐẶT HÀNG (GỌI API) ──
+  const handlePlaceOrder = async () => {
     if (!selectedAddress) {
-      alert("Vui lòng chọn địa chỉ giao hàng!");
+      alert("Vui lòng chọn hoặc thêm địa chỉ nhận hàng!");
       return;
     }
-    
-    // lấy idBranch từ localStorage
-    const storedBranchId = localStorage.getItem("selectedBranchId") || 1; 
 
-    
-    const checkoutRequest = {
+    const storedBranchId = localStorage.getItem("idBranch") || "1";
+
+    const checkoutPayload = {
       idAddress: selectedAddress.idAddress,
       idVoucher: selectedVoucher ? selectedVoucher.idVoucher : null,
       idBranch: parseInt(storedBranchId),
       paymentMethod: paymentMethod,
-      note: note
+      note: note,
     };
 
-    console.log("Payload gửi xuống Backend:", checkoutRequest);
-    
-    // Gọi hàm thành công để App.jsx xử lý (VD: hiện thông báo, chuyển về Home)
-    if (onOrderSuccess) onOrderSuccess(checkoutRequest);
+    try {
+      setIsProcessing(true);
+      const res = await fetch("http://localhost:8080/api/orders/checkout", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(checkoutPayload),
+      });
+
+      const textMessage = await res.text();
+
+      if (res.ok) {
+        alert(textMessage);
+        if (onOrderSuccess) onOrderSuccess();
+      } else {
+        alert(textMessage);
+      }
+    } catch (err) {
+      alert("Lỗi kết nối đến máy chủ!");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  // ── XỬ LÝ LƯU NHANH ĐỊA CHỈ TRONG POPUP ──
-  const handleQuickAddAddress = (e) => {
+  // ── XỬ LÝ LƯU NHANH ĐỊA CHỈ BẰNG API ──
+  const handleQuickAddAddress = async (e) => {
     e.preventDefault();
-    const newAddr = { idAddress: Date.now(), ...newAddressForm };
-    setAddresses([newAddr, ...addresses]);
-    setSelectedAddress(newAddr); // Chọn luôn địa chỉ vừa tạo
-    setIsAddingAddress(false);
-    setShowAddressPopup(false);
-    setNewAddressForm({ name: '', sdt: '', houseNumber: '', ward: '', district: '', city: '' });
+    try {
+      const res = await fetch("http://localhost:8080/api/addresses/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(newAddressForm),
+      });
+
+      if (res.ok) {
+        await fetchAddresses();
+        setIsAddingAddress(false);
+        setShowAddressPopup(false);
+        setNewAddressForm({
+          name: "",
+          sdt: "",
+          houseNumber: "",
+          ward: "",
+          district: "",
+          city: "",
+        });
+      } else {
+        const err = await res.text();
+        alert(err);
+      }
+    } catch (error) {
+      alert("Lỗi thêm địa chỉ mới!");
+    }
   };
 
   return (
@@ -199,7 +319,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
             boxShadow: "var(--card-shadow)",
           }}
         >
-          {/* Viền trang trí kiểu phong bì */}
           <div
             style={{
               height: "4px",
@@ -207,7 +326,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 "repeating-linear-gradient(45deg, #215bc4, #215bc4 15px, transparent 15px, transparent 30px, #d13239 30px, #d13239 45px, transparent 45px, transparent 60px)",
             }}
           />
-
           <div
             style={{
               padding: "2.4rem",
@@ -335,8 +453,9 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
           <div
             style={{ display: "flex", flexDirection: "column", gap: "2.4rem" }}
           >
+            {/* Đã bao cả available của API và isAvailable */}
             {cartData.items
-              .filter((item) => item.isAvailable)
+              .filter((item) => item.available || item.isAvailable)
               .map((item) => (
                 <div
                   key={item.idProduct}
@@ -356,13 +475,34 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                         height: "6rem",
                         background: "#f0f0f0",
                         borderRadius: "0.8rem",
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                        fontSize: "3rem",
+                        overflow: "hidden",
                       }}
                     >
-                      {item.imageUrl}
+                      {/* Nếu dùng Mock thì nó là emoji, nếu API thì là link ảnh */}
+                      {item.imageUrl.startsWith("http") ? (
+                        <img
+                          src={item.imageUrl}
+                          alt={item.productName}
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            objectFit: "cover",
+                          }}
+                        />
+                      ) : (
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "center",
+                            fontSize: "3rem",
+                          }}
+                        >
+                          {item.imageUrl}
+                        </div>
+                      )}
                     </div>
                     <span style={{ fontSize: "1.5rem", fontWeight: 500 }}>
                       {item.productName}
@@ -410,7 +550,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
               alignItems: "stretch",
             }}
           >
-            {/* Note Input */}
             <div
               style={{
                 flex: 1,
@@ -431,7 +570,7 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 </span>
                 <input
                   type="text"
-                  placeholder="Please leave a message..."
+                  placeholder="Ghi chú đơn hàng..."
                   value={note}
                   onChange={(e) => setNote(e.target.value)}
                   style={{
@@ -445,8 +584,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 />
               </div>
             </div>
-
-            {/* Shipping Info */}
             <div
               style={{
                 flex: 1,
@@ -485,36 +622,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                   Miễn Phí
                 </span>
               </div>
-              <div
-                style={{
-                  background: "#f5fbf7",
-                  padding: "1.2rem",
-                  borderRadius: "0.8rem",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "0.8rem",
-                }}
-              >
-                <span
-                  style={{ color: "var(--green-accent)", fontSize: "1.8rem" }}
-                >
-                  📦
-                </span>
-                <span
-                  style={{
-                    fontSize: "1.4rem",
-                    fontWeight: 600,
-                    color: "var(--green-house)",
-                  }}
-                >
-                  Tủ Nhận Hàng
-                </span>
-              </div>
-              <p
-                style={{ fontSize: "1.3rem", color: "var(--text-black-soft)" }}
-              >
-                Order is eligible for co-check. ⓘ
-              </p>
             </div>
           </div>
 
@@ -533,7 +640,12 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 marginRight: "1.6rem",
               }}
             >
-              Order Total ({cartData.items.length} Item):
+              Order Total (
+              {
+                cartData.items.filter((i) => i.available || i.isAvailable)
+                  .length
+              }{" "}
+              Item):
             </span>
             <span
               style={{
@@ -556,7 +668,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
             boxShadow: "var(--card-shadow)",
           }}
         >
-          {/* Chọn Voucher */}
           <div
             style={{
               display: "flex",
@@ -579,7 +690,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 eMarket Voucher
               </span>
             </div>
-
             <div style={{ flex: 1 }}>
               {selectedVoucher ? (
                 <div
@@ -607,7 +717,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 </span>
               )}
             </div>
-
             <button
               onClick={() => setShowVoucherPopup(true)}
               style={{
@@ -625,7 +734,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
             </button>
           </div>
 
-          {/* Chọn Phương thức thanh toán */}
           <div
             style={{
               display: "flex",
@@ -698,7 +806,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 ))}
               </div>
 
-              {/* Layout Tổng kết + Ảnh thẻ */}
               <div
                 style={{
                   display: "flex",
@@ -706,7 +813,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                   alignItems: "flex-end",
                 }}
               >
-                {/* Ảnh thẻ */}
                 <div
                   style={{
                     width: "280px",
@@ -730,7 +836,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                   />
                 </div>
 
-                {/* Bill tính tiền */}
                 <div
                   style={{
                     width: "300px",
@@ -828,41 +933,43 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
             <span
               style={{ fontSize: "1.3rem", color: "var(--text-black-soft)" }}
             >
-              By clicking 'Place Order', you are agreeing to{" "}
+              Bằng việc bấm Đặt hàng, bạn đã đồng ý với{" "}
               <strong
                 style={{ color: "var(--green-accent)", cursor: "pointer" }}
               >
-                Emarket General Transaction Terms
+                Điều khoản dịch vụ của eMarket
               </strong>
             </span>
             <button
               onClick={handlePlaceOrder}
+              disabled={isProcessing}
               style={{
-                background: "var(--green-house)",
+                background: isProcessing ? "#ccc" : "var(--green-house)",
                 color: "#fff",
                 padding: "1.4rem 4rem",
                 borderRadius: "var(--btn-radius)",
                 border: "none",
                 fontWeight: 700,
                 fontSize: "1.8rem",
-                cursor: "pointer",
+                cursor: isProcessing ? "not-allowed" : "pointer",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.2)",
                 transition: "transform 0.15s",
               }}
               onMouseDown={(e) =>
+                !isProcessing &&
                 (e.currentTarget.style.transform = "scale(0.95)")
               }
-              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onMouseUp={(e) =>
+                !isProcessing && (e.currentTarget.style.transform = "scale(1)")
+              }
             >
-              Place Order
+              {isProcessing ? "Đang xử lý..." : "Đặt hàng"}
             </button>
           </div>
         </section>
       </main>
 
-      {/* ═════════════════════════════════════════════════════════════════
-          POPUP: CHỌN / THÊM ĐỊA CHỈ (Mini-form ngay trong popup)
-      ═════════════════════════════════════════════════════════════════ */}
+      {/* ── POPUPS ── */}
       {showAddressPopup && (
         <div
           style={{
@@ -918,7 +1025,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 ×
               </button>
             </div>
-
             <div
               style={{
                 padding: "2.4rem",
@@ -1158,9 +1264,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
         </div>
       )}
 
-      {/* ═════════════════════════════════════════════════════════════════
-          POPUP: CHỌN VOUCHER
-      ═════════════════════════════════════════════════════════════════ */}
       {showVoucherPopup && (
         <div
           style={{
@@ -1213,7 +1316,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 ×
               </button>
             </div>
-
             <div
               style={{
                 padding: "2.4rem",
@@ -1243,8 +1345,18 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
               >
                 Không dùng Voucher
               </button>
-
-              {MOCK_VOUCHERS.map((v) => (
+              {vouchers.length === 0 && (
+                <p
+                  style={{
+                    textAlign: "center",
+                    fontSize: "1.4rem",
+                    color: "var(--text-black-soft)",
+                  }}
+                >
+                  Bạn không có voucher nào khả dụng.
+                </p>
+              )}
+              {vouchers.map((v) => (
                 <div
                   key={v.idVoucher}
                   onClick={() => {

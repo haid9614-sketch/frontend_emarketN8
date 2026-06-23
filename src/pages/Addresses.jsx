@@ -15,31 +15,13 @@ function IconArrowLeft() {
   );
 }
 
-/* ─── MOCK DATA VỚI ENTITY ADDRESS ──────── */
-const INITIAL_ADDRESSES = [
-  {
-    idAddress: 1,
-    name: "Tạ Hải Dương",
-    sdt: "0865032770",
-    houseNumber: "Số 22, Ngõ 215",
-    ward: "Định Công Thượng",
-    district: "Hoàng Mai",
-    city: "Hà Nội",
-  },
-];
-
 /* ─── COMPONENT CHÍNH ───────────────────────────────────── */
 export default function Addresses({ onBack }) {
-  // Trạng thái điều hướng nội bộ: 'list' (Danh sách) hoặc 'add' (Thêm mới)
   const [view, setView] = useState("list");
-
-  // State danh sách địa chỉ nhận từ API 
-  const [addresses, setAddresses] = useState(INITIAL_ADDRESSES);
-
-  // State điều khiển Popup Xóa
+  const [addresses, setAddresses] = useState([]); 
+  const [loading, setLoading] = useState(true); 
   const [deleteTargetId, setDeleteTargetId] = useState(null);
 
-  // State Form Thêm 
   const [formData, setFormData] = useState({
     name: "",
     sdt: "",
@@ -49,12 +31,41 @@ export default function Addresses({ onBack }) {
     city: "",
   });
 
-  // Tự động cuộn lên đầu trang
+  const token = localStorage.getItem("token");
+
+  // HÀM TẢI DANH SÁCH ĐỊA CHỈ
+  const fetchAddresses = async () => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const res = await fetch(
+        "http://localhost:8080/api/addresses/my-addresses",
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setAddresses(data); // Đổ dữ liệu vào state
+      }
+    } catch (err) {
+      console.error("Lỗi khi tải địa chỉ:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Tự động tải dữ liệu khi component được bật lên
+  useEffect(() => {
+    fetchAddresses();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, [view]);
 
-  // Điều phối nút Quay lại ở Header
   const handleHeaderBack = () => {
     if (view === "add") {
       setView("list");
@@ -63,41 +74,66 @@ export default function Addresses({ onBack }) {
     }
   };
 
-  // Xác nhận hành động xóa địa chỉ
-  const confirmDelete = () => {
-    setAddresses((prev) =>
-      prev.filter((addr) => addr.idAddress !== deleteTargetId),
-    );
-    setDeleteTargetId(null);
+  // HÀM XÓA ĐỊA CHỈ API
+  const confirmDelete = async () => {
+    if (!deleteTargetId || !token) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/addresses/delete/${deleteTargetId}`,
+        {
+          method: "DELETE",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      if (res.ok) {
+        fetchAddresses(); 
+      } else {
+        const errText = await res.text();
+        alert(errText);
+      }
+    } catch (err) {
+      alert("Lỗi kết nối máy chủ!");
+    } finally {
+      setDeleteTargetId(null); 
+    }
   };
 
-  // Xử lý khi bấm nút Ok
-  const handleAddNew = (e) => {
+  // HÀM THÊM ĐỊA CHỈ API
+  const handleAddNew = async (e) => {
     e.preventDefault();
+    if (!token) return;
 
-    
-    const newAddress = {
-      idAddress: Date.now(), 
-      name: formData.name,
-      sdt: formData.sdt,
-      houseNumber: formData.houseNumber,
-      ward: formData.ward,
-      district: formData.district,
-      city: formData.city,
-    };
+    try {
+      const res = await fetch("http://localhost:8080/api/addresses/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify(formData), 
+      });
 
-    setAddresses((prev) => [...prev, newAddress]);
-
-    // Reset toàn bộ form về trạng thái trống
-    setFormData({
-      name: "",
-      sdt: "",
-      houseNumber: "",
-      ward: "",
-      district: "",
-      city: "",
-    });
-    setView("list"); 
+      if (res.ok) {
+        // Reset form và quay lại màn danh sách
+        setFormData({
+          name: "",
+          sdt: "",
+          houseNumber: "",
+          ward: "",
+          district: "",
+          city: "",
+        });
+        setView("list");
+        fetchAddresses(); // Làm mới danh sách để thấy địa chỉ vừa thêm
+      } else {
+        const errText = await res.text();
+        alert(errText);
+      }
+    } catch (err) {
+      alert("Lỗi kết nối máy chủ!");
+    }
   };
 
   return (
@@ -183,7 +219,6 @@ export default function Addresses({ onBack }) {
           >
             Địa chỉ của bạn
           </span>
-
           {view === "add" && (
             <>
               <span style={{ margin: "0 0.5rem", opacity: 0.4 }}>/</span>
@@ -208,7 +243,6 @@ export default function Addresses({ onBack }) {
             alignItems: "flex-start",
           }}
         >
-          {/* Cột trái: Danh sách các thẻ địa chỉ */}
           <div
             style={{
               flex: 1,
@@ -217,7 +251,17 @@ export default function Addresses({ onBack }) {
               gap: "2.4rem",
             }}
           >
-            {addresses.length === 0 ? (
+            {loading ? (
+              <p
+                style={{
+                  fontSize: "1.8rem",
+                  color: "var(--text-black)",
+                  fontWeight: 600,
+                }}
+              >
+                Đang tải địa chỉ...
+              </p>
+            ) : addresses.length === 0 ? (
               <p
                 style={{ fontSize: "1.6rem", color: "var(--text-black-soft)" }}
               >
@@ -239,7 +283,6 @@ export default function Addresses({ onBack }) {
                   }}
                 >
                   <div>
-                    {/* Render thông tin Động từ Entity*/}
                     <div
                       style={{
                         display: "flex",
@@ -286,7 +329,6 @@ export default function Addresses({ onBack }) {
                       {addr.city}
                     </p>
                   </div>
-
                   <button
                     onClick={() => setDeleteTargetId(addr.idAddress)}
                     style={{
@@ -314,7 +356,6 @@ export default function Addresses({ onBack }) {
             )}
           </div>
 
-          {/* Cột phải: Khối tóm tắt hướng dẫn */}
           <aside
             style={{
               width: "380px",
@@ -399,7 +440,6 @@ export default function Addresses({ onBack }) {
           >
             Điền địa chỉ nhận hàng mới của bạn
           </h2>
-
           <form
             onSubmit={handleAddNew}
             style={{
@@ -412,10 +452,9 @@ export default function Addresses({ onBack }) {
               gap: "2.4rem",
             }}
           >
-            {/* 1. Trường Tên người nhận (name)*/}
             <input
               required
-              placeholder="Họ và tên người nhận (name)"
+              placeholder="Họ và tên người nhận"
               value={formData.name}
               onChange={(e) =>
                 setFormData({ ...formData, name: e.target.value })
@@ -430,12 +469,10 @@ export default function Addresses({ onBack }) {
                 fontFamily: "inherit",
               }}
             />
-
-            {/* 2. Trường Số điện thoại người nhận (sdt)*/}
             <input
               required
               type="tel"
-              placeholder="Số điện thoại nhận hàng (sdt)"
+              placeholder="Số điện thoại nhận hàng"
               value={formData.sdt}
               onChange={(e) =>
                 setFormData({ ...formData, sdt: e.target.value })
@@ -450,11 +487,9 @@ export default function Addresses({ onBack }) {
                 fontFamily: "inherit",
               }}
             />
-
-            {/* 3. Trường Số nhà / Đường phố (houseNumber) */}
             <input
               required
-              placeholder="Số nhà, Tên đường (houseNumber)"
+              placeholder="Số nhà, Tên đường"
               value={formData.houseNumber}
               onChange={(e) =>
                 setFormData({ ...formData, houseNumber: e.target.value })
@@ -469,11 +504,9 @@ export default function Addresses({ onBack }) {
                 fontFamily: "inherit",
               }}
             />
-
-            {/* 4. Trường Phường / Xã (ward) */}
             <input
               required
-              placeholder="Phường / Xã (ward)"
+              placeholder="Phường / Xã"
               value={formData.ward}
               onChange={(e) =>
                 setFormData({ ...formData, ward: e.target.value })
@@ -488,11 +521,9 @@ export default function Addresses({ onBack }) {
                 fontFamily: "inherit",
               }}
             />
-
-            {/* 5. Trường Quận / Huyện (district) */}
             <input
               required
-              placeholder="Quận / Huyện (district)"
+              placeholder="Quận / Huyện"
               value={formData.district}
               onChange={(e) =>
                 setFormData({ ...formData, district: e.target.value })
@@ -507,11 +538,9 @@ export default function Addresses({ onBack }) {
                 fontFamily: "inherit",
               }}
             />
-
-            {/* 6. Trường Tỉnh / Thành phố (city) */}
             <input
               required
-              placeholder="Tỉnh / Thành phố (city)"
+              placeholder="Tỉnh / Thành phố"
               value={formData.city}
               onChange={(e) =>
                 setFormData({ ...formData, city: e.target.value })
@@ -526,8 +555,6 @@ export default function Addresses({ onBack }) {
                 fontFamily: "inherit",
               }}
             />
-
-            {/*Submit form*/}
             <div
               style={{
                 display: "flex",
@@ -555,7 +582,7 @@ export default function Addresses({ onBack }) {
                   (e.currentTarget.style.transform = "scale(1)")
                 }
               >
-                Ok
+                Lưu địa chỉ
               </button>
             </div>
           </form>
@@ -574,6 +601,7 @@ export default function Addresses({ onBack }) {
             alignItems: "center",
             justifyContent: "center",
             padding: "2rem",
+            backdropFilter: "blur(3px)",
           }}
         >
           <div
@@ -585,6 +613,7 @@ export default function Addresses({ onBack }) {
               maxWidth: "400px",
               boxShadow: "0 10px 40px rgba(0,0,0,0.2)",
               textAlign: "center",
+              animation: "fadeIn 0.2s ease-out",
             }}
           >
             <h3
@@ -606,7 +635,6 @@ export default function Addresses({ onBack }) {
             >
               Bạn có chắc chắn muốn xóa địa chỉ này khỏi danh sách không?
             </p>
-
             <div style={{ display: "flex", gap: "1.6rem" }}>
               <button
                 onClick={() => setDeleteTargetId(null)}

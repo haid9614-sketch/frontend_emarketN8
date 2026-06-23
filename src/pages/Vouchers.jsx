@@ -21,26 +21,47 @@ function IconArrowLeft() {
   );
 }
 
-
-
-/* ─── MOCK DATA ────────────────────────────────────────── */
-const MOCK_VOUCHERS = [
-  { idVoucher: 1, discount: 50000, quantity: 150 },
-  { idVoucher: 2, discount: 20000, quantity: 50 },
-  { idVoucher: 3, discount: 100000, quantity: 15 },
-  { idVoucher: 4, discount: 30000, quantity: 80 },
-  { idVoucher: 5, discount: 15000, quantity: 200 },
-  { idVoucher: 6, discount: 250000, quantity: 5 },
-];
-
-// Mảng card
+// Mảng card background
 const BG_IMAGES = [cardBg5, cardBg1, cardBg4, cardBg2, cardBg3];
 
 /* ─── COMPONENT ────────────────────────────────────────── */
 export default function Vouchers({ onBack }) {
-  // Luôn cuộn lên trên cùng khi mở 
+  // STATE HỨNG DỮ LIỆU API
+  const [vouchers, setVouchers] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // HÀM GỌI API LẤY VOUCHER
+  const fetchVouchers = async () => {
+    const token = localStorage.getItem("token");
+    if (!token) {
+      setLoading(false);
+      return;
+    }
+
+    try {
+      setLoading(true);
+      const res = await fetch("http://localhost:8080/api/voucher", {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`, //token
+        },
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        setVouchers(data); 
+      }
+    } catch (err) {
+      console.error("Lỗi khi tải voucher:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Luôn cuộn lên trên cùng và gọi API khi mở
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchVouchers();
   }, []);
 
   return (
@@ -171,106 +192,152 @@ export default function Vouchers({ onBack }) {
           Voucher của bạn:
         </h2>
 
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(3, 1fr)",
-            gap: "2.4rem",
-          }}
-        >
-          {MOCK_VOUCHERS.map((v, index) => {
-            const bgImg = BG_IMAGES[index % BG_IMAGES.length];
+        {loading ? (
+          <p
+            style={{
+              fontSize: "1.8rem",
+              color: "var(--text-black)",
+              fontWeight: 600,
+              padding: "4rem 0",
+              textAlign: "center",
+            }}
+          >
+            Đang tải ví Voucher...
+          </p>
+        ) : vouchers.length === 0 ? (
+          <div
+            style={{
+              background: "#fff",
+              padding: "4rem",
+              borderRadius: "1.6rem",
+              textAlign: "center",
+              boxShadow: "var(--card-shadow)",
+            }}
+          >
+            <p
+              style={{
+                fontSize: "1.8rem",
+                color: "var(--text-black-soft)",
+                fontWeight: 600,
+              }}
+            >
+              Hiện tại bạn chưa có Voucher nào trong ví.
+            </p>
+            <p
+              style={{
+                fontSize: "1.5rem",
+                color: "var(--text-black-soft)",
+                marginTop: "1rem",
+              }}
+            >
+              Hãy mua sắm thêm để tích lũy và nhận ưu đãi nhé!
+            </p>
+          </div>
+        ) : (
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
+              gap: "2.4rem",
+            }}
+          >
+            {vouchers.map((v, index) => {
+              // Tự động xoay vòng ảnh nền dựa trên index
+              const bgImg = BG_IMAGES[index % BG_IMAGES.length];
 
-            return (
-              <div
-                key={v.idVoucher}
-                style={{
-                  position: "relative",
-                  height: "210px",
-                  borderRadius: "1.6rem",
-                  overflow: "hidden",
-                  boxShadow: "var(--card-shadow)",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "flex-end",
-                  padding: "2.4rem",
-                }}
-              >
-                {/* Background Blur */}
+              return (
                 <div
+                  key={v.idVoucher}
                   style={{
-                    position: "absolute",
-                    inset: 0,
-                    backgroundImage: `url(${bgImg})`,
-                    backgroundSize: "cover",
-                    backgroundPosition: "center",
-                    filter: "blur(3px)",
-                    transform: "scale(1.3)",
-                    zIndex: 0,
+                    position: "relative",
+                    height: "210px",
+                    borderRadius: "1.6rem",
+                    overflow: "hidden",
+                    boxShadow: "var(--card-shadow)",
+                    display: "flex",
+                    flexDirection: "column",
+                    justifyContent: "flex-end",
+                    padding: "2.4rem",
                   }}
-                />
-                {/* Lớp Overlay xanh đậm */}
-                <div
-                  style={{
-                    position: "absolute",
-                    inset: 0,
-                    background: "rgba(30, 57, 50, 0.40)",
-                    zIndex: 1,
-                  }}
-                />
-
-                {/* Nội dung Card */}
-                <div style={{ position: "relative", zIndex: 2, color: "#fff" }}>
-                  <p
-                    style={{
-                      fontSize: "1.3rem",
-                      fontWeight: 700,
-                      letterSpacing: "0.08em",
-                      textTransform: "uppercase",
-                      marginBottom: "0.4rem",
-                      color: "rgba(255,255,255,0.85)",
-                    }}
-                  >
-                    eMarket Reward
-                  </p>
-
-                  <h3
-                    style={{
-                      fontSize: "3.2rem",
-                      fontWeight: 800,
-                      lineHeight: 1.2,
-                      marginBottom: "1.6rem",
-                      textShadow: "0 2px 8px rgba(0,0,0,0.3)",
-                    }}
-                  >
-                    Giảm {v.discount.toLocaleString("vi-VN")} ₫
-                  </h3>
-
+                >
+                  {/* Background Blur */}
                   <div
                     style={{
-                      display: "flex",
-                      justifyContent: "flex-start",
-                      alignItems: "center",
+                      position: "absolute",
+                      inset: 0,
+                      backgroundImage: `url(${bgImg})`,
+                      backgroundSize: "cover",
+                      backgroundPosition: "center",
+                      filter: "blur(3px)",
+                      transform: "scale(1.3)",
+                      zIndex: 0,
                     }}
+                  />
+                  {/* Lớp Overlay xanh đậm */}
+                  <div
+                    style={{
+                      position: "absolute",
+                      inset: 0,
+                      background: "rgba(30, 57, 50, 0.40)",
+                      zIndex: 1,
+                    }}
+                  />
+
+                  {/* Nội dung Card */}
+                  <div
+                    style={{ position: "relative", zIndex: 2, color: "#fff" }}
                   >
-                    <span
+                    <p
                       style={{
-                        fontSize: "1.4rem",
-                        fontWeight: 600,
-                        background: "rgba(0,0,0,0.35)",
-                        padding: "0.4rem 1.2rem",
-                        borderRadius: "20px",
-                        backdropFilter: "blur(4px)",
+                        fontSize: "1.3rem",
+                        fontWeight: 700,
+                        letterSpacing: "0.08em",
+                        textTransform: "uppercase",
+                        marginBottom: "0.4rem",
+                        color: "rgba(255,255,255,0.85)",
                       }}
                     >
-                      Còn lại: {v.quantity}
-                    </span>
+                      eMarket Reward
+                    </p>
+
+                    <h3
+                      style={{
+                        fontSize: "3.2rem",
+                        fontWeight: 800,
+                        lineHeight: 1.2,
+                        marginBottom: "1.6rem",
+                        textShadow: "0 2px 8px rgba(0,0,0,0.3)",
+                      }}
+                    >
+                      Giảm {v.discount.toLocaleString("vi-VN")} ₫
+                    </h3>
+
+                    <div
+                      style={{
+                        display: "flex",
+                        justifyContent: "flex-start",
+                        alignItems: "center",
+                      }}
+                    >
+                      <span
+                        style={{
+                          fontSize: "1.4rem",
+                          fontWeight: 600,
+                          background: "rgba(0,0,0,0.35)",
+                          padding: "0.4rem 1.2rem",
+                          borderRadius: "20px",
+                          backdropFilter: "blur(4px)",
+                        }}
+                      >
+                        Còn lại: {v.quantity} lượt
+                      </span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </main>
     </div>
   );
