@@ -14,7 +14,6 @@ const NAV_TABS = [
   { id: "voucher", label: "Voucher" },
 ];
 
-
 const CATEGORIES = [
   { id: "all", label: "Tất cả", dbId: null },
   { id: "meat", label: "Thịt cá", dbId: 1 },
@@ -123,7 +122,19 @@ export default function Home({
 }) {
   const [activeTab, setActiveTab] = useState("home");
   const [showPopup, setShowPopup] = useState(false);
-  const [selectedBranch, setSelectedBranch] = useState(null);
+
+  // lay id lẫn tên
+  const [selectedBranch, setSelectedBranch] = useState(() => {
+    const savedId = localStorage.getItem("idBranch");
+    const savedName = localStorage.getItem("branchName"); 
+
+    if (savedId && savedId !== "undefined" && savedId !== "null") {
+      
+      return { idBranch: parseInt(savedId), name: savedName || "eMarket" };
+    }
+    return null;
+  });
+
   const [cartCount, setCartCount] = useState(0);
   const [bannerIdx, setBannerIdx] = useState(0);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
@@ -135,34 +146,39 @@ export default function Home({
 
   const hasRestoredScroll = useRef(false);
 
-  // LOGIC BRANCH & GỌI API
+  // LOGIC BRANCH & GỌI API ĐÃ ĐƯỢC BẢO VỆ CHẶT CHẼ
   useEffect(() => {
     let currentBranchId = localStorage.getItem("idBranch");
-    if (!currentBranchId) {
+
+    // Nếu chưa có ID hoặc ID bị lỗi, tự động reset về 1
+    if (
+      !currentBranchId ||
+      currentBranchId === "undefined" ||
+      currentBranchId === "null"
+    ) {
       currentBranchId = "1";
+      localStorage.setItem("idBranch", "1");
       setShowPopup(true);
     } else if (!selectedBranch) {
       setSelectedBranch({
-        id: currentBranchId,
+        idBranch: parseInt(currentBranchId),
         name: `Chi nhánh ID: ${currentBranchId}`,
       });
     }
 
-    // 2. Hàm kéo dữ liệu từ Spring Boot
     const fetchProducts = async () => {
       setLoading(true);
       try {
         const activeCatObj = CATEGORIES.find((c) => c.id === selectedCat);
         const categoryId = activeCatObj?.dbId;
 
-        // Xây dựng URL động dựa trên các tham số
         let url = `http://localhost:8080/api/products?idBranch=${currentBranchId}&size=50`;
         if (categoryId) url += `&categoryId=${categoryId}`;
         if (appliedQuery) url += `&keyword=${appliedQuery}`;
 
         const response = await fetch(url);
         if (response.ok) {
-          const data = await response.json(); // Nhận Page<ProductResponse>
+          const data = await response.json();
           setProducts(data.content);
         }
       } catch (error) {
@@ -198,7 +214,6 @@ export default function Home({
     return () => clearInterval(t);
   }, []);
 
-  
   // HÀM GỌI API THÊM VÀO GIỎ HÀNG
   const handleAddToCart = async (product) => {
     const token = localStorage.getItem("token");
@@ -207,7 +222,7 @@ export default function Home({
     if (!token) {
       alert("Vui lòng đăng nhập để thêm sản phẩm vào giỏ hàng!");
       onLoginClick();
-      return false; // Báo thất bại
+      return false;
     }
 
     try {
@@ -225,8 +240,8 @@ export default function Home({
       });
 
       if (res.ok) {
-        setCartCount((c) => c + 1); 
-        return true; // Báo thành công
+        setCartCount((c) => c + 1);
+        return true;
       } else {
         const errText = await res.text();
         alert(errText);
@@ -659,9 +674,6 @@ export default function Home({
       >
         <span style={{ color: "#fff", fontSize: "1.5rem", fontWeight: 500 }}>
           Sẵn trong giỏ hàng của bạn
-          {/* <strong style={{ fontSize: "1.9rem", fontWeight: 800 }}>
-            {cartCount}
-          </strong> */}
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: "1.6rem" }}>
           <button
@@ -701,15 +713,15 @@ export default function Home({
         </div>
       </div>
 
-      {/* HIỂN THỊ POPUP NẾU CHƯA CHỌN CHI NHÁNH HOẶC BẤM NÚT ĐỔI */}
+      {/* HIỂN THỊ POPUP  */}
       {showPopup && (
         <BranchPopup
           selectedBranch={selectedBranch}
           onClose={() => setShowPopup(false)}
           onSelectBranch={(branch) => {
             setSelectedBranch(branch);
-            localStorage.setItem("idBranch", branch.id);
-            setShowPopup(false);
+            localStorage.setItem("idBranch", branch.idBranch);
+            localStorage.setItem("branchName", branch.name);
           }}
         />
       )}
@@ -720,20 +732,19 @@ export default function Home({
 /* ── Product Card Component ── */
 function ProductCard({ product, onAdd, onClick }) {
   const [hovered, setHovered] = useState(false);
-  const [added, setAdded] = useState(false); 
+  const [added, setAdded] = useState(false);
   const isOutOfStock = product.stockQuantity === 0;
 
-  // Xử lý logic bấm nút thêm
   const handleAddClick = async (e) => {
     e.stopPropagation();
-    if (isOutOfStock || added) return; 
+    if (isOutOfStock || added) return;
 
-    const isSuccess = await onAdd(); 
+    const isSuccess = await onAdd();
     if (isSuccess) {
-      setAdded(true); // Biến nút thành ✓ Đã thêm
+      setAdded(true);
       setTimeout(() => {
-        setAdded(false); // 1.5 giây sau trả về như cũ
-      }, 1500); 
+        setAdded(false);
+      }, 1500);
     }
   };
 
@@ -756,7 +767,7 @@ function ProductCard({ product, onAdd, onClick }) {
         transform:
           hovered && !isOutOfStock ? "translateY(-2px)" : "translateY(0)",
         transition: "transform 0.2s ease, box-shadow 0.2s ease",
-        opacity: isOutOfStock ? 0.6 : 1, 
+        opacity: isOutOfStock ? 0.6 : 1,
       }}
     >
       <div
@@ -767,17 +778,35 @@ function ProductCard({ product, onAdd, onClick }) {
           background: "#f9f9f9",
         }}
       >
-        <img
-          src={product.imageUrl}
-          alt={product.name}
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
-        />
+        {/* Kiểm tra an toàn: Nếu item.imageUrl là mảng tĩnh (emoji) thì không gắn vào thẻ img */}
+        {product.imageUrl && product.imageUrl.startsWith("http") ? (
+          <img
+            src={product.imageUrl}
+            alt={product.name}
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+              objectFit: "cover",
+            }}
+          />
+        ) : (
+          <div
+            style={{
+              width: "100%",
+              height: "100%",
+              position: "absolute",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontSize: "4rem",
+            }}
+          >
+            {product.imageUrl}
+          </div>
+        )}
+
         {isOutOfStock && (
           <div
             style={{
@@ -839,8 +868,7 @@ function ProductCard({ product, onAdd, onClick }) {
             ({product.unit})
           </span>
         </p>
-        
-        {/* NÚT THÊM VÀO GIỎ  */}
+
         <button
           disabled={isOutOfStock || added}
           onClick={handleAddClick}
@@ -848,20 +876,40 @@ function ProductCard({ product, onAdd, onClick }) {
             width: "100%",
             padding: "0.6rem 0",
             borderRadius: "var(--btn-radius)",
-            background: added ? "var(--green-starbucks)" : (isOutOfStock ? "#ccc" : "var(--green-accent)"),
+            background: added
+              ? "var(--green-starbucks)"
+              : isOutOfStock
+                ? "#ccc"
+                : "var(--green-accent)",
             color: "#fff",
             fontSize: "1.3rem",
             fontWeight: 700,
             border: "none",
-            cursor: (isOutOfStock || added) ? "not-allowed" : "pointer",
+            cursor: isOutOfStock || added ? "not-allowed" : "pointer",
             transition: "transform 0.15s, background 0.15s",
           }}
-          onMouseDown={(e) => !added && !isOutOfStock && (e.currentTarget.style.transform = "scale(0.95)")}
-          onMouseUp={(e) => !added && !isOutOfStock && (e.currentTarget.style.transform = "scale(1)")}
-          onMouseEnter={(e) => !added && !isOutOfStock && (e.currentTarget.style.background = "#006241")}
-          onMouseLeave={(e) => !added && !isOutOfStock && (e.currentTarget.style.background = "var(--green-accent)")}
+          onMouseDown={(e) =>
+            !added &&
+            !isOutOfStock &&
+            (e.currentTarget.style.transform = "scale(0.95)")
+          }
+          onMouseUp={(e) =>
+            !added &&
+            !isOutOfStock &&
+            (e.currentTarget.style.transform = "scale(1)")
+          }
+          onMouseEnter={(e) =>
+            !added &&
+            !isOutOfStock &&
+            (e.currentTarget.style.background = "#006241")
+          }
+          onMouseLeave={(e) =>
+            !added &&
+            !isOutOfStock &&
+            (e.currentTarget.style.background = "var(--green-accent)")
+          }
         >
-          {added ? "✓ Đã thêm" : (isOutOfStock ? "Tạm hết" : "+ Thêm vào giỏ")}
+          {added ? "✓ Đã thêm" : isOutOfStock ? "Tạm hết" : "+ Thêm vào giỏ"}
         </button>
       </div>
     </div>

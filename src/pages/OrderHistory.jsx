@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 
-import bannerImg from "../assets/order/banShip.jpg"; 
-import pendingImg from "../assets/order/pending.png"; // Ảnh icon trạng thái
+import bannerImg from "../assets/order/banShip.jpg";
+import pendingImg from "../assets/order/pending.png";
 import shippingImg from "../assets/order/shipping.png";
 import deliveredImg from "../assets/order/delivered.png";
 import cancelledImg from "../assets/order/cancelled.png";
@@ -21,74 +21,119 @@ function IconArrowLeft() {
   );
 }
 
-/* ─── MOCK DATA KHỚP DTO OrderResponse ────────────────── */
-const MOCK_ORDERS = [
-  {
-    idOrders: 112,
-    receiverName: "Tạ Hải Dương",
-    receiverPhone: "0865032770",
-    shippingAddress:
-      "Số 22, Ngõ 215 Định Công Thượng, Phường Định Công, Quận Hoàng Mai, Hà Nội",
-    paymentMethod: "COD",
-    status: "PENDING",
-    total: 300000,
-    note: "Giao giờ hành chính",
-    createdAt: "2026-06-20T10:30:00",
-    items: [
-      {
-        productName: "[MỞ BÁN] Áo polo ROWAY PREMIUM form regular fit",
-        quantity: 1,
-        price: 150000,
-      },
-      { productName: "Quần Short Kaki Nam", quantity: 1, price: 150000 },
-    ],
-  },
-  {
-    idOrders: 113,
-    receiverName: "Tạ Hải Dương",
-    receiverPhone: "0865032770",
-    shippingAddress: "Số 22, Ngõ 215 Định Công Thượng",
-    paymentMethod: "Banking",
-    status: "PENDING",
-    total: 150000,
-    note: "",
-    createdAt: "2026-06-19T14:20:00",
-    items: [
-      {
-        productName: "Ốp Lưng 120 Silicon trong suốt",
-        quantity: 1,
-        price: 150000,
-      },
-    ],
-  },
-  {
-    idOrders: 105,
-    receiverName: "Tạ Hải Dương",
-    receiverPhone: "0865032770",
-    shippingAddress: "Học viện Công nghệ Bưu chính Viễn thông",
-    paymentMethod: "MOMO",
-    status: "SHIPPING",
-    total: 85000,
-    note: "Gọi trước khi giao",
-    createdAt: "2026-06-18T09:00:00",
-    items: [{ productName: "Táo Fuji Nhật Bản", quantity: 1, price: 85000 }],
-  },
-];
+// ICON THÀNH CÔNG
+function IconSuccessCircle() {
+  return (
+    <svg
+      width="64"
+      height="64"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#00754a"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+  );
+}
+
+// ICON LỖI
+function IconErrorCircle() {
+  return (
+    <svg
+      width="64"
+      height="64"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#d13239"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <circle cx="12" cy="12" r="10"></circle>
+      <line x1="15" y1="9" x2="9" y2="15"></line>
+      <line x1="9" y1="9" x2="15" y2="15"></line>
+    </svg>
+  );
+}
 
 /* ─── COMPONENT CHÍNH ───────────────────────────────────── */
 export default function OrderHistory({ onBack }) {
-  // view: 'menu' (4 nút bự) hoặc 'list' (danh sách đơn theo trạng thái)
   const [view, setView] = useState("menu");
   const [activeStatus, setActiveStatus] = useState(null);
-  const [orders, setOrders] = useState(MOCK_ORDERS);
+
+  // STATE API
+  const [orders, setOrders] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [badgeCount, setBadgeCount] = useState({ PENDING: 0, SHIPPING: 0 });
 
   // Popup states
-  const [detailOrder, setDetailOrder] = useState(null); // Lưu đơn hàng để xem chi tiết
-  const [cancelOrderId, setCancelOrderId] = useState(null); // Lưu ID đơn hàng chuẩn bị hủy
+  const [detailOrder, setDetailOrder] = useState(null);
+  const [cancelOrderId, setCancelOrderId] = useState(null);
+
+  // STATE CHO THÔNG BÁO TÙY CHỈNH (Thay thế alert)
+  const [alertMsg, setAlertMsg] = useState(null); // Dạng: { type: 'success' | 'error', text: '...' }
+
+  const token = localStorage.getItem("token");
+
+  // HÀM ĐẾM SỐ LƯỢNG BADGE
+  const fetchBadgeCounts = async () => {
+    if (!token) return;
+    try {
+      const [resPending, resShipping] = await Promise.all([
+        fetch("http://localhost:8080/api/orders/history?status=PENDING", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+        fetch("http://localhost:8080/api/orders/history?status=SHIPPING", {
+          headers: { Authorization: `Bearer ${token}` },
+        }),
+      ]);
+
+      let pendingLength = 0;
+      let shippingLength = 0;
+
+      if (resPending.ok) pendingLength = (await resPending.json()).length;
+      if (resShipping.ok) shippingLength = (await resShipping.json()).length;
+
+      setBadgeCount({ PENDING: pendingLength, SHIPPING: shippingLength });
+    } catch (err) {
+      console.error("Lỗi khi tải số lượng:", err);
+    }
+  };
 
   useEffect(() => {
     window.scrollTo(0, 0);
+    if (view === "menu") {
+      fetchBadgeCounts();
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [view]);
+
+  // HÀM LẤY DANH SÁCH ĐƠN HÀNG
+  const fetchOrdersByStatus = async (status) => {
+    if (!token) return;
+    try {
+      setLoading(true);
+      const res = await fetch(
+        `http://localhost:8080/api/orders/history?status=${status}`,
+        {
+          method: "GET",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+      if (res.ok) {
+        const data = await res.json();
+        setOrders(data);
+      }
+    } catch (err) {
+      console.error("Lỗi tải đơn hàng:", err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleHeaderBack = () => {
     if (view === "list") {
@@ -101,31 +146,44 @@ export default function OrderHistory({ onBack }) {
   const openStatus = (status) => {
     setActiveStatus(status);
     setView("list");
+    fetchOrdersByStatus(status);
   };
 
-  const confirmCancel = () => {
-    // Gọi API Cancel ở đây. Mock: Chuyển status đơn hàng sang CANCELLED
-    setOrders((prev) =>
-      prev.map((o) =>
-        o.idOrders === cancelOrderId ? { ...o, status: "CANCELLED" } : o,
-      ),
-    );
-    setCancelOrderId(null);
+  // HÀM HỦY ĐƠN HÀNG
+  const confirmCancel = async () => {
+    if (!cancelOrderId || !token) return;
+
+    try {
+      const res = await fetch(
+        `http://localhost:8080/api/orders/cancel?idOrder=${cancelOrderId}`,
+        {
+          method: "POST",
+          headers: { Authorization: `Bearer ${token}` },
+        },
+      );
+
+      const textMsg = await res.text();
+      if (res.ok) {
+        // Hiện Popup thành công thay vì alert
+        setAlertMsg({ type: "success", text: textMsg });
+        fetchOrdersByStatus(activeStatus); // Tải lại danh sách
+        fetchBadgeCounts(); // Cập nhật lại số đếm ở Menu
+      } else {
+        setAlertMsg({ type: "error", text: textMsg });
+      }
+    } catch (err) {
+      setAlertMsg({ type: "error", text: "Lỗi kết nối máy chủ!" });
+    } finally {
+      setCancelOrderId(null); // Đóng bảng hỏi Xác nhận
+    }
   };
-
-  // Tính số lượng badge
-  const pendingCount = orders.filter((o) => o.status === "PENDING").length;
-  const shippingCount = orders.filter((o) => o.status === "SHIPPING").length;
-
-  // Lọc đơn hàng cho view list
-  const visibleOrders = orders.filter((o) => o.status === activeStatus);
 
   const getStatusText = (status) => {
     switch (status) {
       case "PENDING":
-        return "Đơn hàng của bạn đang chờ xác nhận";
+        return "Đơn hàng đang chờ xác nhận";
       case "SHIPPING":
-        return "Đơn hàng đang được giao đến bạn";
+        return "Đơn hàng đang được giao";
       case "DELIVERED":
         return "Đơn hàng đã giao thành công";
       case "CANCELLED":
@@ -224,7 +282,6 @@ export default function OrderHistory({ onBack }) {
       ════════════════════════════════════════════════════════ */}
       {view === "menu" && (
         <>
-          {/* Banner kéo tràn viền */}
           <div
             style={{
               width: "100%",
@@ -241,7 +298,6 @@ export default function OrderHistory({ onBack }) {
             />
           </div>
 
-          {/* Cụm 4 nút trạng thái được giữ nguyên chiều rộng 1200px */}
           <main
             style={{
               maxWidth: "1200px",
@@ -298,7 +354,7 @@ export default function OrderHistory({ onBack }) {
                       opacity: 0.8,
                     }}
                   />
-                  {pendingCount > 0 && (
+                  {badgeCount.PENDING > 0 && (
                     <div
                       style={{
                         position: "absolute",
@@ -317,7 +373,7 @@ export default function OrderHistory({ onBack }) {
                         fontWeight: 800,
                       }}
                     >
-                      {pendingCount}
+                      {badgeCount.PENDING}
                     </div>
                   )}
                 </div>
@@ -373,7 +429,7 @@ export default function OrderHistory({ onBack }) {
                       opacity: 0.8,
                     }}
                   />
-                  {shippingCount > 0 && (
+                  {badgeCount.SHIPPING > 0 && (
                     <div
                       style={{
                         position: "absolute",
@@ -392,7 +448,7 @@ export default function OrderHistory({ onBack }) {
                         fontWeight: 800,
                       }}
                     >
-                      {shippingCount}
+                      {badgeCount.SHIPPING}
                     </div>
                   )}
                 </div>
@@ -519,7 +575,7 @@ export default function OrderHistory({ onBack }) {
       )}
 
       {/* ════════════════════════════════════════════════════════
-          VIEW 2: DANH SÁCH ĐƠN HÀNG THEO TRẠNG THÁI
+          VIEW 2: DANH SÁCH ĐƠN HÀNG
       ════════════════════════════════════════════════════════ */}
       {view === "list" && (
         <main
@@ -533,7 +589,18 @@ export default function OrderHistory({ onBack }) {
             gap: "2.4rem",
           }}
         >
-          {visibleOrders.length === 0 ? (
+          {loading ? (
+            <div
+              style={{
+                textAlign: "center",
+                padding: "10rem 0",
+                fontSize: "1.8rem",
+                fontWeight: 600,
+              }}
+            >
+              Đang tải danh sách đơn hàng...
+            </div>
+          ) : orders.length === 0 ? (
             <div
               style={{
                 textAlign: "center",
@@ -545,7 +612,7 @@ export default function OrderHistory({ onBack }) {
               Không có đơn hàng nào ở trạng thái này.
             </div>
           ) : (
-            visibleOrders.map((order) => (
+            orders.map((order) => (
               <div
                 key={order.idOrders}
                 style={{
@@ -555,7 +622,6 @@ export default function OrderHistory({ onBack }) {
                   boxShadow: "var(--card-shadow)",
                 }}
               >
-                {/* Header đơn hàng */}
                 <div
                   style={{
                     display: "flex",
@@ -578,11 +644,10 @@ export default function OrderHistory({ onBack }) {
                       gap: "0.6rem",
                     }}
                   >
-                     {getStatusText(order.status)}
+                    {getStatusText(order.status)}
                   </span>
                 </div>
 
-                {/* Danh sách sản phẩm (Duyệt nhiều sản phẩm) */}
                 <div
                   style={{
                     display: "flex",
@@ -596,15 +661,28 @@ export default function OrderHistory({ onBack }) {
                         style={{
                           width: "8rem",
                           height: "8rem",
-                          background: "#f5f5f5",
+                          background: "#f9f9f9",
                           borderRadius: "0.8rem",
                           display: "flex",
                           alignItems: "center",
                           justifyContent: "center",
+                          overflow: "hidden",
                           fontSize: "3rem",
                         }}
                       >
-                        📦
+                        {item.imageUrl && item.imageUrl.startsWith("http") ? (
+                          <img
+                            src={item.imageUrl}
+                            alt={item.productName}
+                            style={{
+                              width: "100%",
+                              height: "100%",
+                              objectFit: "cover",
+                            }}
+                          />
+                        ) : (
+                          "📦"
+                        )}
                       </div>
                       <div
                         style={{
@@ -630,17 +708,16 @@ export default function OrderHistory({ onBack }) {
                             marginBottom: "0.4rem",
                           }}
                         >
-                          unit: hộp
+                          Đơn giá: {item.price.toLocaleString("vi-VN")}₫
                         </p>
                         <p style={{ fontSize: "1.4rem", fontWeight: 600 }}>
-                          x{item.quantity}
+                          Số lượng: x{item.quantity}
                         </p>
                       </div>
                     </div>
                   ))}
                 </div>
 
-                {/* Footer đơn hàng: Tổng tiền & Buttons */}
                 <div
                   style={{
                     marginTop: "2.4rem",
@@ -762,7 +839,6 @@ export default function OrderHistory({ onBack }) {
                 ×
               </button>
             </div>
-
             <div
               style={{
                 padding: "2.4rem",
@@ -791,7 +867,6 @@ export default function OrderHistory({ onBack }) {
                   <strong>Địa chỉ:</strong> {detailOrder.shippingAddress}
                 </p>
               </div>
-
               <div
                 style={{
                   marginBottom: "1.6rem",
@@ -813,7 +888,6 @@ export default function OrderHistory({ onBack }) {
                   <strong>Ghi chú:</strong> {detailOrder.note || "Không có"}
                 </p>
               </div>
-
               <div style={{ textAlign: "right" }}>
                 <p
                   style={{
@@ -831,7 +905,7 @@ export default function OrderHistory({ onBack }) {
       )}
 
       {/* ════════════════════════════════════════════════════════
-          POPUP: XÁC NHẬN HỦY ĐƠN
+          POPUP: XÁC NHẬN HỦY ĐƠN (CHƯA GỌI API)
       ════════════════════════════════════════════════════════ */}
       {cancelOrderId && (
         <div
@@ -911,6 +985,106 @@ export default function OrderHistory({ onBack }) {
                 Hủy Đơn
               </button>
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ════════════════════════════════════════════════════════
+          POPUP MỚI: THÔNG BÁO TÙY CHỈNH 
+      ════════════════════════════════════════════════════════ */}
+      {alertMsg && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "2rem",
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              width: "100%",
+              maxWidth: "420px",
+              borderRadius: "2rem",
+              padding: "4rem 3.2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+              animation: "fadeIn 0.3s ease-out",
+            }}
+          >
+            <div
+              style={{
+                marginBottom: "2.4rem",
+                animation:
+                  "bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              }}
+            >
+              {alertMsg.type === "success" ? (
+                <IconSuccessCircle />
+              ) : (
+                <IconErrorCircle />
+              )}
+            </div>
+
+            <h2
+              style={{
+                fontSize: "2.4rem",
+                fontWeight: 800,
+                color: "var(--text-black)",
+                marginBottom: "1.2rem",
+              }}
+            >
+              {alertMsg.type === "success" ? "Thành công!" : "Thất bại"}
+            </h2>
+
+            <p
+              style={{
+                fontSize: "1.6rem",
+                color: "var(--text-black-soft)",
+                lineHeight: 1.6,
+                marginBottom: "3.2rem",
+              }}
+            >
+              {alertMsg.text}
+            </p>
+
+            <button
+              onClick={() => setAlertMsg(null)}
+              style={{
+                width: "100%",
+                padding: "1.4rem",
+                background:
+                  alertMsg.type === "success"
+                    ? "var(--green-accent)"
+                    : "#d13239",
+                color: "#fff",
+                borderRadius: "50px",
+                border: "none",
+                fontSize: "1.6rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow:
+                  alertMsg.type === "success"
+                    ? "0 4px 14px rgba(0,117,74,0.3)"
+                    : "0 4px 14px rgba(209,50,57,0.3)",
+                transition: "transform 0.15s",
+              }}
+              onMouseDown={(e) =>
+                (e.currentTarget.style.transform = "scale(0.95)")
+              }
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+            >
+              Đóng
+            </button>
           </div>
         </div>
       )}
