@@ -11,10 +11,15 @@ export default function BranchPopup({
 
   // State giao diện
   const [hovered, setHovered] = useState(null);
-  const [localSel, setLocalSel] = useState(null); // Lưu toàn bộ object chi nhánh đang chọn tạm
-  const [favorites, setFavorites] = useState([]); 
+  const [localSel, setLocalSel] = useState(null);
+  const [favorites, setFavorites] = useState([]);
 
+  // KHAI BÁO BIẾN ĐÚNG 1 LẦN DUY NHẤT Ở ĐÂY
   const storedBranchId = localStorage.getItem("idBranch");
+  const isFirstTime =
+    !storedBranchId ||
+    storedBranchId === "undefined" ||
+    storedBranchId === "null";
 
   const toggleFav = (id, e) => {
     e.stopPropagation();
@@ -31,8 +36,7 @@ export default function BranchPopup({
           const data = await res.json();
           setBranches(data);
 
-          
-          if (storedBranchId) {
+          if (!isFirstTime) {
             const found = data.find(
               (b) => b.idBranch === parseInt(storedBranchId),
             );
@@ -41,10 +45,8 @@ export default function BranchPopup({
               onSelectBranch(found);
             }
           } else if (data.length > 0) {
+            // Lần đầu vào thì chỉ bôi xanh cái đầu tiên, BẮT BUỘC KHÁCH TỰ BẤM NÚT
             setLocalSel(data[0]);
-            localStorage.setItem("idBranch", data[0].idBranch);
-            localStorage.setItem("branchName", data[0].name);
-            onSelectBranch(data[0]);
           }
         }
       } catch (err) {
@@ -57,24 +59,23 @@ export default function BranchPopup({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Xử lý khi nhấn "Đặt hàng tại đây"
   const handleOrder = () => {
     if (localSel) {
       localStorage.setItem("idBranch", localSel.idBranch);
       localStorage.setItem("branchName", localSel.name);
       onSelectBranch(localSel);
-      onClose();
+      onClose(); // Lưu xong mới cho đóng popup
     }
   };
 
   return (
-    /* Backdrop nền mờ */
+    /* Backdrop nền mờ - Nếu là lần đầu thì khóa không cho bấm ra ngoài tắt */
     <div
-      onClick={onClose}
+      onClick={isFirstTime ? undefined : onClose}
       style={{
         position: "fixed",
         inset: 0,
-        zIndex: 9999, 
+        zIndex: 9999,
         background: "rgba(0,0,0,0.5)",
         backdropFilter: "blur(4px)",
         display: "flex",
@@ -83,7 +84,6 @@ export default function BranchPopup({
         paddingTop: "10rem",
       }}
     >
-      {/* Modal chính (To và rộng rãi) */}
       <div
         onClick={(e) => e.stopPropagation()}
         style={{
@@ -107,7 +107,6 @@ export default function BranchPopup({
             minWidth: 0,
           }}
         >
-          {/* Thanh Header Xanh lá cây */}
           <div
             style={{
               background: "var(--green-house)",
@@ -128,7 +127,6 @@ export default function BranchPopup({
             </p>
           </div>
 
-          {/* Danh sách cuộn */}
           <div style={{ overflowY: "auto", flex: 1 }}>
             {loading ? (
               <div
@@ -160,13 +158,13 @@ export default function BranchPopup({
                 return (
                   <div
                     key={branch.idBranch}
-                    onClick={() => setLocalSel(branch)} // Chỉ chọn nháp, chưa lưu
+                    onClick={() => setLocalSel(branch)}
                     onMouseEnter={() => setHovered(branch.idBranch)}
                     onMouseLeave={() => setHovered(null)}
                     style={{
                       padding: "1.6rem 2.4rem",
                       background: isSel
-                        ? "#f5fbf7" // Màu xanh nhạt khi được chọn
+                        ? "#f5fbf7"
                         : isHovered
                           ? "#f5f5f4"
                           : "#fff",
@@ -175,7 +173,6 @@ export default function BranchPopup({
                       transition: "background 0.15s",
                     }}
                   >
-                    {/* Hàng: Thông tin + icon */}
                     <div
                       style={{
                         display: "flex",
@@ -184,7 +181,6 @@ export default function BranchPopup({
                         gap: "1rem",
                       }}
                     >
-                      {/* Tên & Địa chỉ từ API */}
                       <div style={{ flex: 1 }}>
                         <p
                           style={{
@@ -211,7 +207,6 @@ export default function BranchPopup({
                         </p>
                       </div>
 
-                      {/* Icon Tim & Info */}
                       <div
                         style={{
                           display: "flex",
@@ -254,10 +249,9 @@ export default function BranchPopup({
                       </div>
                     </div>
 
-                    {/* Nút "Đặt hàng tại đây" - Chỉ hiện ở chi nhánh đang chọn */}
                     {isSel && (
                       <button
-                        onClick={handleOrder} // Gọi hàm lưu thật
+                        onClick={handleOrder}
                         style={{
                           marginTop: "1.2rem",
                           padding: "0.75rem 2rem",
@@ -302,36 +296,41 @@ export default function BranchPopup({
             src="https://www.openstreetmap.org/export/embed.html?bbox=105.79%2C20.99%2C105.90%2C21.06&layer=mapnik"
             style={{ width: "100%", height: "100%", border: "none" }}
           />
-          {/* Nút Tắt × */}
-          <button
-            onClick={onClose}
-            style={{
-              position: "absolute",
-              top: "1.2rem",
-              right: "1.2rem",
-              width: "3.2rem",
-              height: "3.2rem",
-              borderRadius: "50%",
-              background: "#fff",
-              boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
-              fontSize: "1.8rem",
-              fontWeight: 700,
-              color: "var(--text-black)",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              lineHeight: 1,
-              border: "none",
-              cursor: "pointer",
-              transition: "transform 0.1s",
-            }}
-            onMouseEnter={(e) =>
-              (e.currentTarget.style.transform = "scale(1.1)")
-            }
-            onMouseLeave={(e) => (e.currentTarget.style.transform = "scale(1)")}
-          >
-            ×
-          </button>
+
+          {/* Nút Tắt × - CHỈ HIỆN KHI ĐÃ CÓ CHI NHÁNH TỪ TRƯỚC */}
+          {!isFirstTime && (
+            <button
+              onClick={onClose}
+              style={{
+                position: "absolute",
+                top: "1.2rem",
+                right: "1.2rem",
+                width: "3.2rem",
+                height: "3.2rem",
+                borderRadius: "50%",
+                background: "#fff",
+                boxShadow: "0 2px 8px rgba(0,0,0,0.2)",
+                fontSize: "1.8rem",
+                fontWeight: 700,
+                color: "var(--text-black)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                lineHeight: 1,
+                border: "none",
+                cursor: "pointer",
+                transition: "transform 0.1s",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.transform = "scale(1.1)")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.transform = "scale(1)")
+              }
+            >
+              ×
+            </button>
+          )}
         </div>
       </div>
     </div>

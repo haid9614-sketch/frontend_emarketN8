@@ -123,13 +123,12 @@ export default function Home({
   const [activeTab, setActiveTab] = useState("home");
   const [showPopup, setShowPopup] = useState(false);
 
-  // lay id lẫn tên
+  // Lấy cả ID lẫn Tên chi nhánh từ bộ nhớ
   const [selectedBranch, setSelectedBranch] = useState(() => {
     const savedId = localStorage.getItem("idBranch");
-    const savedName = localStorage.getItem("branchName"); 
+    const savedName = localStorage.getItem("branchName");
 
     if (savedId && savedId !== "undefined" && savedId !== "null") {
-      
       return { idBranch: parseInt(savedId), name: savedName || "eMarket" };
     }
     return null;
@@ -150,22 +149,24 @@ export default function Home({
   useEffect(() => {
     let currentBranchId = localStorage.getItem("idBranch");
 
-    // Nếu chưa có ID hoặc ID bị lỗi, tự động reset về 1
+    // NẾU CHƯA CHỌN NHÁNH: Ép bật Popup và DỪNG LẠI (Không tải sản phẩm)
     if (
       !currentBranchId ||
       currentBranchId === "undefined" ||
       currentBranchId === "null"
     ) {
-      currentBranchId = "1";
-      localStorage.setItem("idBranch", "1");
       setShowPopup(true);
+      return; // Dừng luồng chạy, bắt khách phải thao tác ở Popup
     } else if (!selectedBranch) {
       setSelectedBranch({
         idBranch: parseInt(currentBranchId),
-        name: `Chi nhánh ID: ${currentBranchId}`,
+        name:
+          localStorage.getItem("branchName") ||
+          `Chi nhánh ID: ${currentBranchId}`,
       });
     }
 
+    // Kéo dữ liệu từ Spring Boot (Chỉ chạy khi đã có nhánh)
     const fetchProducts = async () => {
       setLoading(true);
       try {
@@ -713,7 +714,7 @@ export default function Home({
         </div>
       </div>
 
-      {/* HIỂN THỊ POPUP  */}
+      {/* HIỂN THỊ POPUP */}
       {showPopup && (
         <BranchPopup
           selectedBranch={selectedBranch}
@@ -721,7 +722,7 @@ export default function Home({
           onSelectBranch={(branch) => {
             setSelectedBranch(branch);
             localStorage.setItem("idBranch", branch.idBranch);
-            localStorage.setItem("branchName", branch.name);
+            localStorage.setItem("branchName", branch.name); // LƯU THÊM TÊN ĐỂ F5 KHÔNG BỊ QUÊN
           }}
         />
       )}
@@ -778,7 +779,6 @@ function ProductCard({ product, onAdd, onClick }) {
           background: "#f9f9f9",
         }}
       >
-        {/* Kiểm tra an toàn: Nếu item.imageUrl là mảng tĩnh (emoji) thì không gắn vào thẻ img */}
         {product.imageUrl && product.imageUrl.startsWith("http") ? (
           <img
             src={product.imageUrl}
