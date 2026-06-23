@@ -71,17 +71,33 @@ function IconCheck() {
   );
 }
 
+// ICON MỚI CHO BẢNG ĐẶT HÀNG THÀNH CÔNG
+function IconSuccessCircle() {
+  return (
+    <svg
+      width="72"
+      height="72"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#00754a"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+  );
+}
+
 /* ─── COMPONENT CHÍNH ───────────────────────────────────── */
 export default function Checkout({ cartData, onBack, onOrderSuccess }) {
-  // State API Data
   const [addresses, setAddresses] = useState([]);
   const [vouchers, setVouchers] = useState([]);
 
-  // State Selected
   const [selectedAddress, setSelectedAddress] = useState(null);
   const [selectedVoucher, setSelectedVoucher] = useState(null);
 
-  // DTO States
   const [paymentMethod, setPaymentMethod] = useState("COD");
   const [note, setNote] = useState("");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -90,6 +106,8 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
   const [showAddressPopup, setShowAddressPopup] = useState(false);
   const [showVoucherPopup, setShowVoucherPopup] = useState(false);
   const [isAddingAddress, setIsAddingAddress] = useState(false);
+  const [orderSuccessMsg, setOrderSuccessMsg] = useState(null); // THÊM STATE CHO MODAL SUCCESS
+
   const [newAddressForm, setNewAddressForm] = useState({
     name: "",
     sdt: "",
@@ -101,7 +119,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
 
   const token = localStorage.getItem("token");
 
-  // Hàm gọi API lấy danh sách địa chỉ
   const fetchAddresses = async () => {
     try {
       const res = await fetch(
@@ -122,7 +139,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
     }
   };
 
-  // Hàm gọi API lấy danh sách Voucher
   const fetchVouchers = async () => {
     try {
       const res = await fetch("http://localhost:8080/api/voucher", {
@@ -137,7 +153,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
     }
   };
 
-  // Tự động cuộn trang và tải dữ liệu khi vào trang Checkout
   useEffect(() => {
     window.scrollTo(0, 0);
     if (token) {
@@ -149,7 +164,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
 
   if (!cartData || !cartData.items) return null;
 
-  // Tính toán tiền
   const subTotal = cartData.totalPrice || 0;
   const discountAmount = selectedVoucher ? selectedVoucher.discount : 0;
   const totalPayment = Math.max(0, subTotal - discountAmount);
@@ -185,8 +199,8 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
       const textMessage = await res.text();
 
       if (res.ok) {
-        alert(textMessage);
-        if (onOrderSuccess) onOrderSuccess();
+        // Thay vì alert, hiển thị Modal Success siêu đẹp
+        setOrderSuccessMsg(textMessage);
       } else {
         alert(textMessage);
       }
@@ -197,7 +211,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
     }
   };
 
-  // ── XỬ LÝ LƯU NHANH ĐỊA CHỈ BẰNG API ──
   const handleQuickAddAddress = async (e) => {
     e.preventDefault();
     try {
@@ -449,11 +462,9 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
               Item Subtotal
             </span>
           </div>
-
           <div
             style={{ display: "flex", flexDirection: "column", gap: "2.4rem" }}
           >
-            {/* Đã bao cả available của API và isAvailable */}
             {cartData.items
               .filter((item) => item.available || item.isAvailable)
               .map((item) => (
@@ -478,8 +489,7 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                         overflow: "hidden",
                       }}
                     >
-                      {/* Nếu dùng Mock thì nó là emoji, nếu API thì là link ảnh */}
-                      {item.imageUrl.startsWith("http") ? (
+                      {item.imageUrl && item.imageUrl.startsWith("http") ? (
                         <img
                           src={item.imageUrl}
                           alt={item.productName}
@@ -540,7 +550,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 </div>
               ))}
           </div>
-
           <div
             style={{
               marginTop: "4rem",
@@ -624,7 +633,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
               </div>
             </div>
           </div>
-
           <div
             style={{
               textAlign: "right",
@@ -805,7 +813,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                   </button>
                 ))}
               </div>
-
               <div
                 style={{
                   display: "flex",
@@ -835,7 +842,6 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                     }}
                   />
                 </div>
-
                 <div
                   style={{
                     width: "300px",
@@ -969,7 +975,7 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
         </section>
       </main>
 
-      {/* ── POPUPS ── */}
+      {/* ── POPUPS ĐỊA CHỈ & VOUCHER (Giữ nguyên) ── */}
       {showAddressPopup && (
         <div
           style={{
@@ -1410,6 +1416,107 @@ export default function Checkout({ cartData, onBack, onOrderSuccess }) {
                 </div>
               ))}
             </div>
+          </div>
+        </div>
+      )}
+
+      {/* ═════════════════════════════════════════════════════════════════
+          POPUP: ĐẶT HÀNG THÀNH CÔNG 
+      ═════════════════════════════════════════════════════════════════ */}
+      {orderSuccessMsg && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "2rem",
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              width: "100%",
+              maxWidth: "420px",
+              borderRadius: "2rem",
+              padding: "4rem 3.2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+              animation: "fadeIn 0.3s ease-out",
+            }}
+          >
+            <div
+              style={{
+                marginBottom: "2.4rem",
+                animation:
+                  "bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              }}
+            >
+              <IconSuccessCircle />
+            </div>
+
+            <h2
+              style={{
+                fontSize: "2.6rem",
+                fontWeight: 800,
+                color: "var(--text-black)",
+                marginBottom: "1.2rem",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Tuyệt vời!
+            </h2>
+
+            <p
+              style={{
+                fontSize: "1.6rem",
+                color: "var(--text-black-soft)",
+                lineHeight: 1.6,
+                marginBottom: "3.2rem",
+              }}
+            >
+              {/* Cắt chuỗi thông báo từ API để in ra cho đẹp */}
+              {orderSuccessMsg}
+            </p>
+
+            <button
+              onClick={() => {
+                setOrderSuccessMsg(null);
+                if (onOrderSuccess) onOrderSuccess(); 
+              }}
+              style={{
+                width: "100%",
+                padding: "1.6rem",
+                background: "var(--green-accent)",
+                color: "#fff",
+                borderRadius: "50px",
+                border: "none",
+                fontSize: "1.6rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(0,117,74,0.3)",
+                transition: "transform 0.15s, background 0.15s",
+              }}
+              onMouseDown={(e) =>
+                (e.currentTarget.style.transform = "scale(0.95)")
+              }
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#006241")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "var(--green-accent)")
+              }
+            >
+              Xem đơn hàng ngay
+            </button>
           </div>
         </div>
       )}

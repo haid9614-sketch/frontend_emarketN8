@@ -124,7 +124,7 @@ export default function Home({
   const [activeTab, setActiveTab] = useState("home");
   const [showPopup, setShowPopup] = useState(false);
   const [selectedBranch, setSelectedBranch] = useState(null);
-  const [cartCount, setCartCount] = useState(2);
+  const [cartCount, setCartCount] = useState(0);
   const [bannerIdx, setBannerIdx] = useState(0);
   const [indicatorStyle, setIndicatorStyle] = useState({ left: 0, width: 0 });
   const tabRefs = useRef({});
@@ -658,10 +658,10 @@ export default function Home({
         }}
       >
         <span style={{ color: "#fff", fontSize: "1.5rem", fontWeight: 500 }}>
-          Sẵn trong giỏ hàng của bạn:{" "}
-          <strong style={{ fontSize: "1.9rem", fontWeight: 800 }}>
+          Sẵn trong giỏ hàng của bạn
+          {/* <strong style={{ fontSize: "1.9rem", fontWeight: 800 }}>
             {cartCount}
-          </strong>
+          </strong> */}
         </span>
         <div style={{ display: "flex", alignItems: "center", gap: "1.6rem" }}>
           <button

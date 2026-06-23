@@ -18,6 +18,7 @@ export default function App() {
   });
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [fromPage, setFromPage] = useState("home");
+  const [checkoutData, setCheckoutData] = useState(null);
 
   const [homeScroll, setHomeScroll] = useState(0);
 
@@ -37,12 +38,11 @@ export default function App() {
         onBack={() => setPage("home")}
         onGoToRegister={() => setPage("register")}
         onLogin={(payload) => {
-          
           const name = payload.email.split("@")[0];
           const userData = { name, ...payload };
 
           setUser(userData);
-          localStorage.setItem("user", JSON.stringify(userData)); 
+          localStorage.setItem("user", JSON.stringify(userData));
           localStorage.setItem("token", payload.token); // Lưu Token
 
           setPage("home");
@@ -58,7 +58,7 @@ export default function App() {
         onBack={() => setPage("home")}
         onGoToLogin={() => setPage("login")}
         onRegisterSuccess={(msg) => {
-          alert(msg); 
+          alert(msg);
           setPage("login");
         }}
       />
@@ -89,6 +89,7 @@ export default function App() {
       <Cart
         onBack={() => setPage("home")}
         onCheckout={(cartData) => {
+          setCheckoutData(cartData);
           setPage("checkout");
         }}
         onProductClick={(product) => {
@@ -119,28 +120,13 @@ export default function App() {
 
   // Màn hình Thanh toán (Checkout)
   if (page === "checkout") {
-    // cart data giả lập
-    const checkoutCart = {
-      totalPrice: 351000,
-      items: [
-        {
-          idProduct: 99,
-          productName: "Nước hoa nữ Blooming",
-          imageUrl: "🌸",
-          price: 351000,
-          quantity: 1,
-          subTotal: 351000,
-          isAvailable: true,
-        },
-      ],
-    };
     return (
       <Checkout
-        cartData={checkoutCart}
+        cartData={checkoutData}
         onBack={() => setPage("cart")}
-        onOrderSuccess={(payload) => {
-          alert("Đặt hàng thành công! Kiểm tra Console F12 để xem DTO");
-          setPage("home");
+        onOrderSuccess={() => {
+          
+          setPage("order_history");
         }}
       />
     );
