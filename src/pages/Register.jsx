@@ -15,8 +15,27 @@ function IconArrowLeft() {
   );
 }
 
+
+function IconSuccessCircle() {
+  return (
+    <svg
+      width="72"
+      height="72"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="#00754a"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+      <polyline points="22 4 12 14.01 9 11.01"></polyline>
+    </svg>
+  );
+}
+
 export default function Register({ onBack, onRegisterSuccess, onGoToLogin }) {
-  // Ánh xạ 100% với RegisterRequest DTO
+  
   const [formData, setFormData] = useState({
     name: "",
     email: "",
@@ -25,71 +44,66 @@ export default function Register({ onBack, onRegisterSuccess, onGoToLogin }) {
     password: "",
   });
   const [error, setError] = useState("");
+  const [successMsg, setSuccessMsg] = useState(null); 
 
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  // api dang ki
- const handleSubmit = async (e) => {
-   e.preventDefault();
+  // API Đăng ký
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-   // 1. Kiểm tra rỗng
-   if (
-     !formData.name ||
-     !formData.email ||
-     !formData.phone ||
-     !formData.password
-   ) {
-     setError("Vui lòng điền đầy đủ các thông tin bắt buộc (*)");
-     return;
-   }
+    // 1. Kiểm tra rỗng
+    if (
+      !formData.name ||
+      !formData.email ||
+      !formData.phone ||
+      !formData.password
+    ) {
+      setError("Vui lòng điền đầy đủ các thông tin bắt buộc (*)");
+      return;
+    }
 
-   // 2. Validate định dạng Email
-   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-   if (!emailRegex.test(formData.email)) {
-     setError("Định dạng email không hợp lệ (Ví dụ: abc@gmail.com)");
-     return;
-   }
+  
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(formData.email)) {
+      setError("Định dạng email không hợp lệ (Ví dụ: abc@gmail.com)");
+      return;
+    }
 
-   // 3. Validate Mật khẩu tối thiểu 6 ký tự
-   if (formData.password.length < 6) {
-     setError("Mật khẩu phải có ít nhất 6 ký tự!");
-     return;
-   }
+   
+    if (formData.password.length < 6) {
+      setError("Mật khẩu phải có ít nhất 6 ký tự!");
+      return;
+    }
 
-   const finalData = {
-     ...formData,
-     age: formData.age ? parseInt(formData.age) : null,
-   };
+    const finalData = {
+      ...formData,
+      age: formData.age ? parseInt(formData.age) : null,
+    };
 
-   try {
-    
-     const response = await fetch(
-       "http://localhost:8080/api/auth/customer/register",
-       {
-         method: "POST",
-         headers: {
-           "Content-Type": "application/json",
-         },
-         body: JSON.stringify(finalData),
-       },
-     );
+    try {
+      const response = await fetch(
+        "http://localhost:8080/api/auth/customer/register",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(finalData),
+        },
+      );
 
-    
-     if (response.ok) {
-       
-       const msg = await response.text();
-       onRegisterSuccess(msg);
-     } else {
-       // Lỗi 400 Bad Request: Do backend trả về (VD: "Thất bại! Email này đã được sử dụng.")
-       const errText = await response.text();
-       setError(errText || "Đăng ký thất bại!");
-     }
-   } catch (err) {
-     setError("Không thể kết nối đến Server! Vui lòng kiểm tra lại Backend.");
-   }
- };
+      if (response.ok) {
+        const msg = await response.text();
+        setSuccessMsg(msg);
+      } else {
+        const errText = await response.text();
+        setError(errText || "Đăng ký thất bại!");
+      }
+    } catch (err) {
+      setError("Không thể kết nối đến Server! Vui lòng kiểm tra lại Backend.");
+    }
+  };
 
   return (
     <div
@@ -356,6 +370,106 @@ export default function Register({ onBack, onRegisterSuccess, onGoToLogin }) {
           </div>
         </form>
       </main>
+
+      {/* ═════════════════════════════════════════════════════════════════
+          POPUP: ĐĂNG KÝ THÀNH CÔNG
+      ═════════════════════════════════════════════════════════════════ */}
+      {successMsg && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 9999,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: "2rem",
+            backdropFilter: "blur(4px)",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              width: "100%",
+              maxWidth: "420px",
+              borderRadius: "2rem",
+              padding: "4rem 3.2rem",
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              boxShadow: "0 20px 40px rgba(0,0,0,0.2)",
+              animation: "fadeIn 0.3s ease-out",
+            }}
+          >
+            <div
+              style={{
+                marginBottom: "2.4rem",
+                animation:
+                  "bounceIn 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+              }}
+            >
+              <IconSuccessCircle />
+            </div>
+
+            <h2
+              style={{
+                fontSize: "2.6rem",
+                fontWeight: 800,
+                color: "var(--text-black)",
+                marginBottom: "1.2rem",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Tuyệt vời!
+            </h2>
+
+            <p
+              style={{
+                fontSize: "1.6rem",
+                color: "var(--text-black-soft)",
+                lineHeight: 1.6,
+                marginBottom: "3.2rem",
+              }}
+            >
+              {successMsg}
+            </p>
+
+            <button
+              onClick={() => {
+                setSuccessMsg(null);
+                onGoToLogin(); 
+              }}
+              style={{
+                width: "100%",
+                padding: "1.6rem",
+                background: "var(--green-accent)",
+                color: "#fff",
+                borderRadius: "50px",
+                border: "none",
+                fontSize: "1.6rem",
+                fontWeight: 700,
+                cursor: "pointer",
+                boxShadow: "0 4px 14px rgba(0,117,74,0.3)",
+                transition: "transform 0.15s, background 0.15s",
+              }}
+              onMouseDown={(e) =>
+                (e.currentTarget.style.transform = "scale(0.95)")
+              }
+              onMouseUp={(e) => (e.currentTarget.style.transform = "scale(1)")}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#006241")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "var(--green-accent)")
+              }
+            >
+              Đăng nhập ngay
+            </button>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

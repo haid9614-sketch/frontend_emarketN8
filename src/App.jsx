@@ -8,9 +8,16 @@ import Addresses from "./pages/Addresses";
 import Checkout from "./pages/Checkout";
 import OrderHistory from "./pages/OrderHistory";
 import Register from "./pages/Register";
+import AppSales from "./pages/sales/AppSales";
 import "./index.css";
 
 export default function App() {
+
+  const currentPath = window.location.pathname;
+  if (currentPath.startsWith("/sales")) {
+    return <AppSales />;
+  }
+
   const [page, setPage] = useState("home");
   const [user, setUser] = useState(() => {
     const savedUser = localStorage.getItem("user");
