@@ -1,16 +1,51 @@
-# React + Vite
+---
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+### 2. FILE `README.md` CHO REPOSITORY FRONTEND (REACTJS)
 
-Currently, two official plugins are available:
+```markdown
+# eMarket Frontend - Giao diện Khách hàng & Nhân viên
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+Đây là mã nguồn Frontend (Giao diện người dùng) của hệ thống Thương mại Điện tử eMarket - Đồ án môn học do **Nhóm 8** phát triển. Ứng dụng được xây dựng theo mô hình SPA (Single Page Application) mang lại trải nghiệm thao tác siêu mượt mà.
 
-## React Compiler
+---
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Công nghệ sử dụng
+* **Core:** ReactJS
+* **Build Tool:** Vite (Tốc độ build và HMR cực nhanh)
+* **CSS Framework:** Tailwind CSS / Bootstrap (Giao diện Responsive)
+* **Routing:** React Router DOM
+* **HTTP Client:** Axios (Tương tác với Spring Boot REST API)
 
-## Expanding the ESLint configuration
+---
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+##  Lưu ý quan trọng
+Để Frontend có thể lấy được dữ liệu sản phẩm và giỏ hàng, **Thầy/Cô vui lòng khởi chạy Backend (Spring Boot) trước** tại cổng `http://localhost:8080` (Xem hướng dẫn tại Repository Backend của nhóm).
+
+---
+
+## Hướng dẫn cài đặt và Khởi chạy
+
+### Bước 1: Yêu cầu môi trường
+* Đảm bảo máy tính đã cài đặt **Node.js** (Phiên bản v18.0 trở lên). Thầy/Cô có thể kiểm tra bằng lệnh `node -v` trong Terminal.
+
+### Bước 2: Cài đặt thư viện
+1. Mở Terminal / Command Prompt hoặc VS Code.
+2. Di chuyển vào thư mục gốc của dự án Frontend:
+   ```bash
+   cd emarket-frontend
+   ``` 
+
+ Chạy lệnh sau để tải toàn bộ thư viện (mất khoảng 1-2 phút):
+
+```bash
+npm install
+```
+Bước 3: Khởi chạy Ứng dụng
+Sau khi cài đặt xong thư viện, chạy lệnh:
+
+```bash
+npm run dev
+```
+Vite sẽ biên dịch và cấp một đường dẫn cục bộ (thường là http://localhost:5173).
+
+Thầy/Cô giữ phím Ctrl và Click vào đường dẫn đó (hoặc copy dán lên Google Chrome) để trải nghiệm giao diện eMarket.  

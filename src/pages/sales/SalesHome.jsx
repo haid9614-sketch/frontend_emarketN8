@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import logo from "../../assets/logoDS.JPG"; 
-import canhBao from "../../assets/canhBao.png"; 
+import canhBao from "../../assets/canhBao2.png"; 
 
 
 function IconPin({ color = "currentColor" }) {
