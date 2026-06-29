@@ -1,8 +1,3 @@
----
-
-### 2. FILE `README.md` CHO REPOSITORY FRONTEND (REACTJS)
-
-```markdown
 # eMarket Frontend - Giao diện Khách hàng & Nhân viên
 
 Đây là mã nguồn Frontend (Giao diện người dùng) của hệ thống Thương mại Điện tử eMarket - Đồ án môn học do **Nhóm 8** phát triển. Ứng dụng được xây dựng theo mô hình SPA (Single Page Application) mang lại trải nghiệm thao tác siêu mượt mà.
